@@ -1,8 +1,8 @@
+
 /* =============================================================
    WELCOME SCREEN
    ============================================================= */
 const welcomeOverlay = document.getElementById('welcome-overlay');
-const welcomeBtn = document.getElementById('welcome-enter-btn');
 const alreadyVisited = sessionStorage.getItem('fw-visited');
 
 if (alreadyVisited) {
@@ -10,13 +10,15 @@ if (alreadyVisited) {
     welcomeOverlay.addEventListener('transitionend', () => {
         welcomeOverlay.style.display = 'none';
     }, { once: true });
+} else {
+    // Auto-dismiss welcome screen after 3 seconds
+    setTimeout(() => {
+        sessionStorage.setItem('fw-visited', '1');
+        welcomeOverlay.classList.add('hidden');
+        setTimeout(() => { welcomeOverlay.style.display = 'none'; }, 900);
+    }, 3000);
 }
 
-welcomeBtn.addEventListener('click', () => {
-    sessionStorage.setItem('fw-visited', '1');
-    welcomeOverlay.classList.add('hidden');
-    setTimeout(() => { welcomeOverlay.style.display = 'none'; }, 900);
-});
 
 /* =============================================================
    CLOCK
