@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firewatch Dashboard</title>
+    <meta name="description" content="A minimalist Firewatch-themed time and weather dashboard." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=Caveat:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="sunset">
+
+    <!-- Background Layers -->
+    <div class="bg-layer bg-sunset"></div>
+    <div class="bg-layer bg-night"></div>
+    <div class="bg-layer bg-evening"></div>
+
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ====== WELCOME SCREEN ====== -->
+    <div class="welcome-overlay" id="welcome-overlay">
+        <div class="welcome-icon">
+            <svg viewBox="0 0 64 64">
+                <polygon points="32,4 36,24 32,20 28,24" />
+                <rect x="29" y="20" width="6" height="28" rx="1" />
+                <rect x="26" y="36" width="12" height="8" rx="1" />
+                <line x1="26" y1="38" x2="38" y2="38" />
+                <line x1="26" y1="40" x2="38" y2="40" />
+                <line x1="26" y1="42" x2="38" y2="42" />
+                <line x1="32" y1="48" x2="24" y2="60" />
+                <line x1="32" y1="48" x2="40" y2="60" />
+                <line x1="24" y1="60" x2="40" y2="60" />
+            </svg>
+        </div>
+        <div class="welcome-title">FIREWATCH CLOCK</div>
+        <div class="welcome-sub">Inspired by the game Firewatch</div>
+        <div class="welcome-line"></div>
+        <button class="welcome-btn" id="welcome-enter-btn">Enter the Lookout</button>
+        <div class="welcome-credit">made by <span class="welcome-credit-name">Hasya</span></div>
+    </div>
+
+    <!-- ====== DASHBOARD ====== -->
+    <main class="dashboard" id="dashboard" data-clock-pos="center">
+
+        <!-- Weather — top-left -->
+        <div class="weather" id="weather-widget">
+            <div class="weather-icon">
+                <svg id="weather-svg" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+            </div>
+            <div class="weather-info">
+                <span class="weather-temp" id="weather-temp">24°C</span>
+                <span class="weather-condition" id="weather-condition">Clear Skies</span>
+            </div>
+        </div>
+
+        <!-- Settings — top-right -->
+        <div class="settings-area">
+            <button class="settings-btn" id="btn-clock-pos" aria-label="Move clock">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="5 9 2 12 5 15" />
+                    <polyline points="9 5 12 2 15 5" />
+                    <polyline points="19 9 22 12 19 15" />
+                    <polyline points="9 19 12 22 15 19" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <line x1="12" y1="2" x2="12" y2="22" />
+                </svg>
+                <span>Move</span>
+            </button>
+            <button class="settings-btn" id="btn-theme" aria-label="Switch theme">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="4" />
+                    <path
+                        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                </svg>
+                <span>Theme</span>
+            </button>
+        </div>
+
+        <!-- Clock — center -->
+        <div class="clock-container" id="clock-container">
+            <div class="clock-time" id="clock-time">
+                <span id="clock-hours">00</span><span class="clock-separator">:</span><span
+                    id="clock-minutes">00</span><span class="clock-ampm" id="clock-ampm">AM</span>
+            </div>
+            <div class="clock-date" id="clock-date">Loading…</div>
+        </div>
+
+        <!-- ====== TOOLBAR — bottom center ====== -->
+        <div class="toolbar" id="toolbar">
+            <button class="toolbar-btn" id="btn-pomodoro" aria-label="Pomodoro">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="13" r="8" />
+                    <path d="M12 9v4l2 2" />
+                    <path d="M9 2h6" />
+                    <line x1="12" y1="2" x2="12" y2="5" />
+                </svg>
+                <span>Pomodoro</span>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button class="toolbar-btn" id="btn-stopwatch" aria-label="Stopwatch">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="13" r="8" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="13" x2="15" y2="13" />
+                    <path d="M9 2h6" />
+                </svg>
+                <span>Stopwatch</span>
+            </button>
+            <div class="toolbar-divider"></div>
+            <button class="toolbar-btn" id="btn-music" aria-label="Lofi Music">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                </svg>
+                <span>Lofi</span>
+            </button>
+        </div>
+
+        <!-- ====== POMODORO PANEL ====== -->
+        <div class="panel pomodoro-panel" id="pomodoro-panel">
+            <div class="panel-title">Pomodoro Timer</div>
+            <div class="pomo-ring-container">
+                <svg class="pomo-ring" width="100" height="100" viewBox="0 0 100 100">
+                    <circle class="pomo-ring-bg" cx="50" cy="50" r="42" />
+                    <circle class="pomo-ring-fill" id="pomo-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="263.89"
+                        stroke-dashoffset="0" />
+                </svg>
+            </div>
+            <div class="timer-display" id="pomo-display">25:00</div>
+            <div class="timer-label" id="pomo-label">Focus Session</div>
+            <div class="timer-controls">
+                <button class="timer-btn primary" id="pomo-start">Start</button>
+                <button class="timer-btn" id="pomo-reset">Reset</button>
+            </div>
+            <div class="pomo-sessions" id="pomo-sessions">
+                <div class="pomo-dot"></div>
+                <div class="pomo-dot"></div>
+                <div class="pomo-dot"></div>
+                <div class="pomo-dot"></div>
+            </div>
+        </div>
+
+        <!-- ====== STOPWATCH PANEL ====== -->
+        <div class="panel stopwatch-panel" id="stopwatch-panel">
+            <div class="panel-title">Stopwatch</div>
+            <div class="timer-display" id="sw-display">00:00<span style="font-size:1.4rem;opacity:0.5">.00</span></div>
+            <div class="timer-controls">
+                <button class="timer-btn primary" id="sw-start">Start</button>
+                <button class="timer-btn" id="sw-lap">Lap</button>
+                <button class="timer-btn" id="sw-reset">Reset</button>
+            </div>
+            <div id="sw-laps"
+                style="margin-top:0.7rem;max-height:100px;overflow-y:auto;font-size:0.7rem;color:var(--text-secondary);letter-spacing:0.05em;">
+            </div>
+        </div>
+
+        <!-- ====== MUSIC PANEL ====== -->
+        <div class="panel music-panel" id="music-panel">
+            <div class="panel-title">Lofi Radio</div>
+            <div class="music-now-playing">
+                <div class="music-visualizer" id="music-visualizer">
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                    <div class="music-bar"></div>
+                </div>
+                <div class="music-track-info">
+                    <span class="music-track-name">Lofi Girl Radio</span>
+                    <span class="music-track-artist">beats to relax / study to</span>
+                </div>
+            </div>
+            <div class="music-controls">
+                <button class="music-play-btn" id="music-play-btn" aria-label="Play or pause music">
+                    <svg id="music-play-icon" viewBox="0 0 24 24">
+                        <polygon points="6,3 20,12 6,21" />
+                    </svg>
+                </button>
+                <div class="music-volume">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="40" />
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== 12/24 HOUR TOGGLE — bottom-right ====== -->
+        <div class="clock-format-toggle" id="clock-format-toggle">
+            <span class="format-label active" id="format-12" data-format="12">12</span>
+            <span class="format-label" id="format-24" data-format="24">24</span>
+            <div class="format-slider" id="format-slider"></div>
+        </div>
+
+    </main>
+
+    <!-- Hidden Lofi iframe -->
+    <iframe id="lofi-iframe" allow="autoplay" src=""></iframe>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
