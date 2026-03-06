@@ -633,25 +633,29 @@ body[data-theme="evening"] .bg-evening {
 }
 
 /* ================================================================
-   MUSIC PLAYER
+   MUSIC PLAYER — Firewatch OST
    ================================================================ */
 .music-panel {
     bottom: 5.5rem;
     right: 2rem;
+    min-width: 300px;
+    max-width: 340px;
 }
 
-.music-now-playing {
+/* Now-playing row */
+.ost-now-playing {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
-.music-visualizer {
+.ost-visualizer {
     display: flex;
     align-items: flex-end;
     gap: 2px;
     height: 20px;
+    flex-shrink: 0;
 }
 
 .music-bar {
@@ -700,30 +704,137 @@ body[data-theme="evening"] .bg-evening {
     }
 }
 
-.music-track-info {
+.ost-track-info {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-.music-track-name {
+.ost-track-name {
     font-size: 0.8rem;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.music-track-artist {
-    font-size: 0.65rem;
+.ost-track-number {
+    font-size: 0.6rem;
     color: var(--text-secondary);
+    letter-spacing: 0.08em;
 }
 
-.music-controls {
+/* ---- Progress bar ---- */
+.ost-progress-wrap {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
-.music-play-btn {
-    width: 36px;
-    height: 36px;
+.ost-time {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    min-width: 2.2rem;
+    text-align: center;
+    letter-spacing: 0.04em;
+}
+
+.ost-progress-bar {
+    position: relative;
+    flex: 1;
+    height: 4px;
+    background: var(--widget-border);
+    border-radius: 2px;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.ost-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: background var(--transition-theme);
+}
+
+.ost-progress-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.15s ease, background var(--transition-theme);
+    box-shadow: 0 0 6px var(--accent);
+}
+
+.ost-progress-bar:hover .ost-progress-thumb,
+.ost-progress-bar:active .ost-progress-thumb {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ---- Main controls ---- */
+.ost-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.ost-ctrl-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.25s ease, background 0.25s ease, transform 0.15s ease;
+}
+
+.ost-ctrl-btn:hover {
+    color: var(--accent-hover);
+    background: var(--btn-hover-bg);
+    transform: scale(1.1);
+}
+
+.ost-ctrl-btn.active {
+    color: var(--accent);
+}
+
+/* Repeat-one badge */
+.ost-ctrl-btn.repeat-one::after {
+    content: '1';
+    position: absolute;
+    font-size: 0.45rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 0.15rem;
+}
+
+.ost-ctrl-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Play button (larger, with border) */
+.ost-play-btn {
+    width: 42px;
+    height: 42px;
     border: 1px solid var(--widget-border);
     border-radius: 50%;
     background: transparent;
@@ -733,30 +844,32 @@ body[data-theme="evening"] .bg-evening {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
 }
 
-.music-play-btn:hover {
+.ost-play-btn:hover {
     background: var(--btn-hover-bg);
     border-color: var(--accent);
     color: var(--accent);
+    transform: scale(1.08);
 }
 
-.music-play-btn svg {
-    width: 16px;
-    height: 16px;
+.ost-play-btn svg {
+    width: 18px;
+    height: 18px;
     fill: currentColor;
     stroke: none;
 }
 
-.music-volume {
+/* ---- Volume ---- */
+.ost-volume {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex: 1;
+    margin-bottom: 0.8rem;
 }
 
-.music-volume svg {
+.ost-volume svg {
     width: 14px;
     height: 14px;
     fill: none;
@@ -800,6 +913,110 @@ body[data-theme="evening"] .bg-evening {
     background: var(--accent);
     border: none;
     cursor: pointer;
+}
+
+/* ---- Track-list toggle ---- */
+.ost-tracklist-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.4rem 0;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.25s ease;
+}
+
+.ost-tracklist-toggle:hover {
+    color: var(--accent-hover);
+}
+
+.ost-tracklist-toggle svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.3s ease;
+}
+
+.ost-tracklist-toggle.open svg {
+    transform: rotate(180deg);
+}
+
+/* ---- Track list ---- */
+.ost-tracklist {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1);
+}
+
+.ost-tracklist.open {
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.ost-tracklist::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ost-tracklist::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ost-tracklist::-webkit-scrollbar-thumb {
+    background: var(--widget-border);
+    border-radius: 2px;
+}
+
+.ost-tracklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ost-tracklist-item:hover {
+    background: var(--btn-hover-bg);
+}
+
+.ost-tracklist-item.active {
+    background: var(--btn-hover-bg);
+    color: var(--accent);
+}
+
+.ost-tracklist-item.active .ost-tl-num {
+    color: var(--accent);
+}
+
+.ost-tl-num {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 1.3rem;
+    letter-spacing: 0.04em;
+}
+
+.ost-tl-title {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ================================================================
@@ -931,6 +1148,7 @@ body[data-theme="evening"] .bg-evening {
         right: 1rem !important;
         transform: translateY(12px) scale(0.97) !important;
         min-width: unset;
+        max-width: unset;
     }
 
     .panel.visible {
@@ -1061,15 +1279,4 @@ body[data-theme="evening"] .bg-evening {
    ================================================================ */
 .hidden {
     display: none !important;
-}
-
-/* Lofi iframe (hidden) */
-#lofi-iframe {
-    position: fixed;
-    width: 0;
-    height: 0;
-    border: none;
-    opacity: 0;
-    pointer-events: none;
-    z-index: -100;
 }
