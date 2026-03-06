@@ -632,6 +632,219 @@ body[data-theme="evening"] .bg-evening {
     background: var(--accent);
 }
 
+/* --- Pomodoro header (title + icon buttons) --- */
+.pomo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+}
+
+.pomo-header .panel-title {
+    margin-bottom: 0;
+}
+
+.pomo-header-btns {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.pomo-icon-btn {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.25s ease, background 0.25s ease, transform 0.15s ease;
+}
+
+.pomo-icon-btn:hover {
+    color: var(--accent-hover);
+    background: var(--btn-hover-bg);
+    transform: scale(1.1);
+}
+
+.pomo-icon-btn.active {
+    color: var(--accent);
+}
+
+.pomo-icon-btn.muted {
+    opacity: 0.4;
+}
+
+.pomo-icon-btn svg {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* --- Presets row --- */
+.pomo-presets {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 0.8rem;
+    justify-content: center;
+}
+
+.pomo-preset {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--widget-border);
+    border-radius: 2rem;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+
+.pomo-preset:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent);
+    background: var(--btn-hover-bg);
+    transform: translateY(-1px);
+}
+
+.pomo-preset.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--btn-hover-bg);
+}
+
+/* --- Custom settings (collapsible) --- */
+.pomo-custom-settings {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(.4, 0, .2, 1), margin 0.35s ease;
+    margin-bottom: 0;
+}
+
+.pomo-custom-settings.open {
+    max-height: 220px;
+    margin-bottom: 0.8rem;
+}
+
+.pomo-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+}
+
+.pomo-setting-row+.pomo-setting-row {
+    border-top: 1px solid var(--widget-border);
+}
+
+.pomo-setting-row label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.pomo-setting-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.pomo-stepper {
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--widget-border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.pomo-stepper:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--btn-hover-bg);
+}
+
+.pomo-setting-input {
+    width: 2.8rem;
+    text-align: center;
+    border: 1px solid var(--widget-border);
+    border-radius: 0.4rem;
+    background: rgba(0, 0, 0, 0.15);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.1rem;
+    outline: none;
+    transition: border-color 0.25s ease;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.pomo-setting-input::-webkit-outer-spin-button,
+.pomo-setting-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pomo-setting-input:focus {
+    border-color: var(--accent);
+}
+
+.pomo-setting-unit {
+    font-family: var(--font-body);
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.pomo-apply-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0;
+    border: 1px solid var(--accent);
+    border-radius: 2rem;
+    background: var(--btn-hover-bg);
+    color: var(--accent);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+}
+
+.pomo-apply-btn:hover {
+    background: var(--accent);
+    color: #1a1a2e;
+    transform: translateY(-1px);
+}
+
 /* ================================================================
    MUSIC PLAYER — Firewatch OST
    ================================================================ */
