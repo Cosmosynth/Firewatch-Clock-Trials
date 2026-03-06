@@ -346,45 +346,259 @@ document.getElementById('sw-reset').addEventListener('click', () => {
 });
 
 /* =============================================================
-   LOFI MUSIC PLAYER (YouTube live stream audio via iframe)
+   FIREWATCH OST PLAYER
    ============================================================= */
-const lofiIframe = document.getElementById('lofi-iframe');
-const musicPlayBtn = document.getElementById('music-play-btn');
-const musicPlayIcon = document.getElementById('music-play-icon');
-const volumeSlider = document.getElementById('volume-slider');
-const musicBars = document.querySelectorAll('.music-bar');
-let musicPlaying = false;
+const OST_TRACKS = [
+    { file: 'Firewatch Music/01. Prologue.flac', title: 'Prologue' },
+    { file: 'Firewatch Music/02. Stay in Your Tower and Watch.flac', title: 'Stay in Your Tower and Watch' },
+    { file: 'Firewatch Music/03. Something\'s Wrong.flac', title: "Something's Wrong" },
+    { file: 'Firewatch Music/04. Beartooth Point.flac', title: 'Beartooth Point' },
+    { file: 'Firewatch Music/05. North Backcountry.flac', title: 'North Backcountry' },
+    { file: 'Firewatch Music/06. Camp Approach.flac', title: 'Camp Approach' },
+    { file: 'Firewatch Music/07. Canyon Sunset.flac', title: 'Canyon Sunset' },
+    { file: 'Firewatch Music/08. Calm After the Storm.flac', title: 'Calm After the Storm' },
+    { file: 'Firewatch Music/09. Conversation, Interrupted.flac', title: 'Conversation, Interrupted' },
+    { file: 'Firewatch Music/10. Cottonwood Hike.flac', title: 'Cottonwood Hike' },
+    { file: 'Firewatch Music/11. New Equipment.flac', title: 'New Equipment' },
+    { file: 'Firewatch Music/12. Infiltration.flac', title: 'Infiltration' },
+    { file: 'Firewatch Music/13. Exfiltration.flac', title: 'Exfiltration' },
+    { file: 'Firewatch Music/14. Hidden Away.flac', title: 'Hidden Away' },
+    { file: 'Firewatch Music/15. An Unfortunate Discovery.flac', title: 'An Unfortunate Discovery' },
+    { file: 'Firewatch Music/16. Shoshone Overlook.flac', title: 'Shoshone Overlook' },
+    { file: 'Firewatch Music/17. Thorofare Hike.flac', title: 'Thorofare Hike' },
+    { file: 'Firewatch Music/18. Catching Up.flac', title: 'Catching Up' },
+    { file: 'Firewatch Music/19. Ol\' Shoshone.flac', title: "Ol' Shoshone" },
+];
 
-// Lofi Girl live stream — embedded as iframe to extract audio
-const LOFI_URL = 'https://www.youtube.com/watch?v=TtkFsfOP9QI';
+const ostAudio = new Audio();
+let ostCurrentIndex = 0;
+let ostIsPlaying = false;
+let ostShuffleOn = false;
+let ostRepeatMode = 0; // 0 = off, 1 = all, 2 = one
+let ostShuffleQueue = [];
+let ostShufflePos = -1;
+
+// DOM refs
+const ostPlayBtn = document.getElementById('ost-play');
+const ostPlayIcon = document.getElementById('ost-play-icon');
+const ostPrevBtn = document.getElementById('ost-prev');
+const ostNextBtn = document.getElementById('ost-next');
+const ostShuffleBtn = document.getElementById('ost-shuffle');
+const ostRepeatBtn = document.getElementById('ost-repeat');
+const ostTrackName = document.getElementById('ost-track-name');
+const ostTrackNumber = document.getElementById('ost-track-number');
+const ostTimeCurrent = document.getElementById('ost-time-current');
+const ostTimeTotal = document.getElementById('ost-time-total');
+const ostProgressBar = document.getElementById('ost-progress-bar');
+const ostProgressFill = document.getElementById('ost-progress-fill');
+const ostProgressThumb = document.getElementById('ost-progress-thumb');
+const ostVisualizer = document.getElementById('ost-visualizer');
+const volumeSlider = document.getElementById('volume-slider');
+const ostMusicBars = ostVisualizer.querySelectorAll('.music-bar');
+const ostTracklistToggle = document.getElementById('ost-tracklist-toggle');
+const ostTracklist = document.getElementById('ost-tracklist');
 
 const PLAY_SVG = '<polygon points="6,3 20,12 6,21" />';
 const PAUSE_SVG = '<rect x="5" y="3" width="5" height="18" rx="1" /><rect x="14" y="3" width="5" height="18" rx="1" />';
 
-musicPlayBtn.addEventListener('click', () => {
-    if (!musicPlaying) {
-        lofiIframe.src = LOFI_URL;
-        musicPlaying = true;
-        musicPlayIcon.innerHTML = PAUSE_SVG;
-        musicBars.forEach(b => b.classList.add('playing'));
+// --- Build track list UI ---
+OST_TRACKS.forEach((track, idx) => {
+    const item = document.createElement('div');
+    item.className = 'ost-tracklist-item';
+    item.dataset.index = idx;
+    item.innerHTML = `<span class="ost-tl-num">${String(idx + 1).padStart(2, '0')}</span><span class="ost-tl-title">${track.title}</span>`;
+    item.addEventListener('click', () => { loadTrack(idx); playTrack(); });
+    ostTracklist.appendChild(item);
+});
+
+// --- Tracklist toggle ---
+let tracklistOpen = false;
+ostTracklistToggle.addEventListener('click', () => {
+    tracklistOpen = !tracklistOpen;
+    ostTracklist.classList.toggle('open', tracklistOpen);
+    ostTracklistToggle.classList.toggle('open', tracklistOpen);
+});
+
+// --- Helpers ---
+function formatTime(sec) {
+    if (!sec || isNaN(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function highlightTracklistItem() {
+    ostTracklist.querySelectorAll('.ost-tracklist-item').forEach((el, i) => {
+        el.classList.toggle('active', i === ostCurrentIndex);
+    });
+}
+
+function generateShuffleQueue() {
+    ostShuffleQueue = [...Array(OST_TRACKS.length).keys()];
+    // Fisher-Yates shuffle
+    for (let i = ostShuffleQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ostShuffleQueue[i], ostShuffleQueue[j]] = [ostShuffleQueue[j], ostShuffleQueue[i]];
+    }
+    // Place current track at front
+    const curIdx = ostShuffleQueue.indexOf(ostCurrentIndex);
+    if (curIdx > 0) {
+        [ostShuffleQueue[0], ostShuffleQueue[curIdx]] = [ostShuffleQueue[curIdx], ostShuffleQueue[0]];
+    }
+    ostShufflePos = 0;
+}
+
+// --- Load & Play ---
+function loadTrack(index) {
+    ostCurrentIndex = index;
+    const track = OST_TRACKS[index];
+    ostAudio.src = track.file;
+    ostTrackName.textContent = track.title;
+    ostTrackNumber.textContent = `${index + 1} / ${OST_TRACKS.length}`;
+    highlightTracklistItem();
+}
+
+function playTrack() {
+    ostAudio.play().then(() => {
+        ostIsPlaying = true;
+        ostPlayIcon.innerHTML = PAUSE_SVG;
+        ostMusicBars.forEach(b => b.classList.add('playing'));
+    }).catch(e => console.warn('Audio play error:', e));
+}
+
+function pauseTrack() {
+    ostAudio.pause();
+    ostIsPlaying = false;
+    ostPlayIcon.innerHTML = PLAY_SVG;
+    ostMusicBars.forEach(b => b.classList.remove('playing'));
+}
+
+function nextTrack() {
+    let nextIdx;
+    if (ostShuffleOn) {
+        ostShufflePos++;
+        if (ostShufflePos >= ostShuffleQueue.length) {
+            if (ostRepeatMode >= 1) {
+                generateShuffleQueue();
+                ostShufflePos = 0;
+            } else {
+                pauseTrack();
+                return;
+            }
+        }
+        nextIdx = ostShuffleQueue[ostShufflePos];
     } else {
-        lofiIframe.src = '';
-        musicPlaying = false;
-        musicPlayIcon.innerHTML = PLAY_SVG;
-        musicBars.forEach(b => b.classList.remove('playing'));
+        nextIdx = ostCurrentIndex + 1;
+        if (nextIdx >= OST_TRACKS.length) {
+            if (ostRepeatMode >= 1) {
+                nextIdx = 0;
+            } else {
+                pauseTrack();
+                return;
+            }
+        }
+    }
+    loadTrack(nextIdx);
+    playTrack();
+}
+
+function prevTrack() {
+    // If more than 3 seconds in, restart current track
+    if (ostAudio.currentTime > 3) {
+        ostAudio.currentTime = 0;
+        return;
+    }
+    let prevIdx;
+    if (ostShuffleOn) {
+        ostShufflePos--;
+        if (ostShufflePos < 0) ostShufflePos = 0;
+        prevIdx = ostShuffleQueue[ostShufflePos];
+    } else {
+        prevIdx = ostCurrentIndex - 1;
+        if (prevIdx < 0) prevIdx = OST_TRACKS.length - 1;
+    }
+    loadTrack(prevIdx);
+    playTrack();
+}
+
+// --- Event Listeners ---
+ostPlayBtn.addEventListener('click', () => {
+    if (!ostAudio.src || ostAudio.src === window.location.href) {
+        // First time — load track 0
+        loadTrack(0);
+        if (ostShuffleOn) generateShuffleQueue();
+        playTrack();
+    } else if (ostIsPlaying) {
+        pauseTrack();
+    } else {
+        playTrack();
     }
 });
 
-// Volume control — sets iframe volume via postMessage (YouTube IFrame API)
+ostNextBtn.addEventListener('click', nextTrack);
+ostPrevBtn.addEventListener('click', prevTrack);
+
+// Shuffle toggle
+ostShuffleBtn.addEventListener('click', () => {
+    ostShuffleOn = !ostShuffleOn;
+    ostShuffleBtn.classList.toggle('active', ostShuffleOn);
+    if (ostShuffleOn) generateShuffleQueue();
+});
+
+// Repeat toggle: off → all → one → off
+ostRepeatBtn.addEventListener('click', () => {
+    ostRepeatMode = (ostRepeatMode + 1) % 3;
+    ostRepeatBtn.classList.toggle('active', ostRepeatMode > 0);
+    ostRepeatBtn.classList.toggle('repeat-one', ostRepeatMode === 2);
+    // Visual feedback
+    if (ostRepeatMode === 0) ostRepeatBtn.title = 'Repeat: Off';
+    else if (ostRepeatMode === 1) ostRepeatBtn.title = 'Repeat: All';
+    else ostRepeatBtn.title = 'Repeat: One';
+});
+
+// Track ended — auto-advance
+ostAudio.addEventListener('ended', () => {
+    if (ostRepeatMode === 2) {
+        ostAudio.currentTime = 0;
+        playTrack();
+    } else {
+        nextTrack();
+    }
+});
+
+// Progress update
+ostAudio.addEventListener('timeupdate', () => {
+    if (!ostAudio.duration) return;
+    const pct = (ostAudio.currentTime / ostAudio.duration) * 100;
+    ostProgressFill.style.width = `${pct}%`;
+    ostProgressThumb.style.left = `${pct}%`;
+    ostTimeCurrent.textContent = formatTime(ostAudio.currentTime);
+});
+
+ostAudio.addEventListener('loadedmetadata', () => {
+    ostTimeTotal.textContent = formatTime(ostAudio.duration);
+});
+
+// Seeking via progress bar
+let ostSeeking = false;
+function seekFromEvent(e) {
+    const rect = ostProgressBar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (ostAudio.duration) {
+        ostAudio.currentTime = pct * ostAudio.duration;
+    }
+}
+ostProgressBar.addEventListener('mousedown', (e) => {
+    ostSeeking = true;
+    seekFromEvent(e);
+});
+window.addEventListener('mousemove', (e) => { if (ostSeeking) seekFromEvent(e); });
+window.addEventListener('mouseup', () => { ostSeeking = false; });
+
+// Volume
+ostAudio.volume = parseInt(volumeSlider.value) / 100;
 volumeSlider.addEventListener('input', () => {
-    const vol = parseInt(volumeSlider.value);
-    try {
-        lofiIframe.contentWindow.postMessage(JSON.stringify({
-            event: 'command',
-            func: 'setVolume',
-            args: [vol]
-        }), '*');
-    } catch (e) { /* cross-origin */ }
+    ostAudio.volume = parseInt(volumeSlider.value) / 100;
 });
 
 /* =============================================================
@@ -494,5 +708,10 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'm' || e.key === 'M') document.getElementById('btn-clock-pos').click();
     if (e.key === 'p' || e.key === 'P') togglePanel('pomodoro');
     if (e.key === 's' || e.key === 'S') togglePanel('stopwatch');
-    if (e.key === 'l' || e.key === 'L') togglePanel('music');
+    if (e.key === 'o' || e.key === 'O') togglePanel('music');
+    // Spacebar toggles play/pause (only if no input is focused)
+    if (e.key === ' ' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        ostPlayBtn.click();
+    }
 });
