@@ -368,6 +368,7 @@ const OST_TRACKS = [
     { file: '17. Thorofare Hike.flac', title: 'Thorofare Hike' },
     { file: '18. Catching Up.flac', title: 'Catching Up' },
     { file: '19. Ol\' Shoshone.flac', title: "Ol' Shoshone" },
+    { file: 'Firewatch (2016) End Credits - I\'d Rather Go Blind by Etta James.mp3', title: "Firewatch End Credit" },
 ];
 
 const ostAudio = new Audio();
@@ -715,3 +716,4 @@ document.addEventListener('keydown', (e) => {
         ostPlayBtn.click();
     }
 });
+
