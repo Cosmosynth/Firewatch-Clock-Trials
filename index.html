@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <title>Firewatch Dashboard</title>
     <meta name="description" content="A minimalist Firewatch-themed time and weather dashboard." />
 
@@ -326,11 +327,23 @@
             </div>
         </div>
 
-        <!-- ====== 12/24 HOUR TOGGLE — bottom-right ====== -->
-        <div class="clock-format-toggle" id="clock-format-toggle">
-            <span class="format-label active" id="format-12" data-format="12">12</span>
-            <span class="format-label" id="format-24" data-format="24">24</span>
-            <div class="format-slider" id="format-slider"></div>
+        <!-- ====== BOTTOM-RIGHT CONTROLS ====== -->
+        <div class="bottom-right-controls" id="bottom-right-controls">
+            <!-- Fullscreen button -->
+            <button class="fullscreen-btn" id="btn-fullscreen" aria-label="Toggle fullscreen">
+                <svg id="fullscreen-icon" viewBox="0 0 24 24">
+                    <polyline points="15 3 21 3 21 9" />
+                    <polyline points="9 21 3 21 3 15" />
+                    <line x1="21" y1="3" x2="14" y2="10" />
+                    <line x1="3" y1="21" x2="10" y2="14" />
+                </svg>
+            </button>
+            <!-- 12/24 hour toggle -->
+            <div class="clock-format-toggle" id="clock-format-toggle">
+                <span class="format-label active" id="format-12" data-format="12">12</span>
+                <span class="format-label" id="format-24" data-format="24">24</span>
+                <div class="format-slider" id="format-slider"></div>
+            </div>
         </div>
 
     </main>
