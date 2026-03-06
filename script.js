@@ -208,14 +208,15 @@ document.getElementById('btn-music').addEventListener('click', () => togglePanel
 /* =============================================================
    POMODORO TIMER
    ============================================================= */
-const POMO_FOCUS = 25 * 60;
-const POMO_BREAK = 5 * 60;
-const POMO_LONG_BREAK = 15 * 60;
+let POMO_FOCUS = 25 * 60;
+let POMO_BREAK = 5 * 60;
+let POMO_LONG_BREAK = 15 * 60;
 let pomoTime = POMO_FOCUS;
 let pomoRunning = false;
 let pomoInterval = null;
 let pomoIsFocus = true;
 let pomoSessions = 0;
+let pomoSoundOn = true;
 const pomoDisplay = document.getElementById('pomo-display');
 const pomoLabel = document.getElementById('pomo-label');
 const pomoRing = document.getElementById('pomo-ring-fill');
@@ -223,6 +224,114 @@ const pomoCircumference = 2 * Math.PI * 42;
 
 pomoRing.style.strokeDasharray = pomoCircumference;
 
+/* --- Web Audio chime (no external file needed) --- */
+function playPomoChime() {
+    if (!pomoSoundOn) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 — major chord
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.18);
+            gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + i * 0.18 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.8);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.18);
+            osc.stop(ctx.currentTime + i * 0.18 + 0.8);
+        });
+        // Cleanup after sound finishes
+        setTimeout(() => ctx.close(), 2000);
+    } catch (e) {
+        console.warn('Audio chime error:', e);
+    }
+}
+
+/* --- Sound toggle --- */
+const pomoSoundBtn = document.getElementById('pomo-sound-toggle');
+const SOUND_ON_SVG = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />';
+const SOUND_OFF_SVG = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />';
+
+pomoSoundBtn.addEventListener('click', () => {
+    pomoSoundOn = !pomoSoundOn;
+    pomoSoundBtn.querySelector('svg').innerHTML = pomoSoundOn ? SOUND_ON_SVG : SOUND_OFF_SVG;
+    pomoSoundBtn.title = pomoSoundOn ? 'Sound On' : 'Sound Off';
+    pomoSoundBtn.classList.toggle('muted', !pomoSoundOn);
+});
+
+/* --- Settings panel toggle --- */
+const pomoSettingsToggle = document.getElementById('pomo-settings-toggle');
+const pomoCustomSettings = document.getElementById('pomo-custom-settings');
+let pomoSettingsOpen = false;
+
+pomoSettingsToggle.addEventListener('click', () => {
+    pomoSettingsOpen = !pomoSettingsOpen;
+    pomoCustomSettings.classList.toggle('open', pomoSettingsOpen);
+    pomoSettingsToggle.classList.toggle('active', pomoSettingsOpen);
+});
+
+/* --- Stepper buttons (+/-) --- */
+document.querySelectorAll('.pomo-stepper').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const dir = parseInt(btn.dataset.dir);
+        let val = parseInt(input.value) + dir;
+        val = Math.max(parseInt(input.min), Math.min(parseInt(input.max), val));
+        input.value = val;
+    });
+});
+
+/* --- Presets --- */
+function applyPomoTimes(focusMin, shortMin, longMin) {
+    if (pomoRunning) return; // don't change while running
+    POMO_FOCUS = focusMin * 60;
+    POMO_BREAK = shortMin * 60;
+    POMO_LONG_BREAK = longMin * 60;
+    pomoIsFocus = true;
+    pomoTime = POMO_FOCUS;
+    pomoSessions = 0;
+    pomoLabel.textContent = 'Focus Session';
+    document.getElementById('pomo-start').textContent = 'Start';
+    updatePomoDisplay();
+    updatePomoDots();
+    // Update custom inputs to reflect preset values
+    document.getElementById('pomo-custom-focus').value = focusMin;
+    document.getElementById('pomo-custom-short').value = shortMin;
+    document.getElementById('pomo-custom-long').value = longMin;
+}
+
+document.querySelectorAll('.pomo-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (pomoRunning) return;
+        document.querySelectorAll('.pomo-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyPomoTimes(
+            parseInt(btn.dataset.focus),
+            parseInt(btn.dataset.short),
+            parseInt(btn.dataset.long)
+        );
+    });
+});
+
+/* --- Apply custom --- */
+document.getElementById('pomo-apply-custom').addEventListener('click', () => {
+    if (pomoRunning) return;
+    const focusMin = parseInt(document.getElementById('pomo-custom-focus').value) || 25;
+    const shortMin = parseInt(document.getElementById('pomo-custom-short').value) || 5;
+    const longMin = parseInt(document.getElementById('pomo-custom-long').value) || 15;
+    // Deselect presets
+    document.querySelectorAll('.pomo-preset').forEach(b => b.classList.remove('active'));
+    applyPomoTimes(focusMin, shortMin, longMin);
+    // Close settings
+    pomoSettingsOpen = false;
+    pomoCustomSettings.classList.remove('open');
+    pomoSettingsToggle.classList.remove('active');
+});
+
+/* --- Display update --- */
 function updatePomoDisplay() {
     const m = Math.floor(pomoTime / 60);
     const s = pomoTime % 60;
@@ -235,6 +344,7 @@ function updatePomoDisplay() {
 
 updatePomoDisplay();
 
+/* --- Start / Pause --- */
 document.getElementById('pomo-start').addEventListener('click', function () {
     if (pomoRunning) {
         clearInterval(pomoInterval);
@@ -248,6 +358,11 @@ document.getElementById('pomo-start').addEventListener('click', function () {
             if (pomoTime < 0) {
                 clearInterval(pomoInterval);
                 pomoRunning = false;
+                playPomoChime();
+
+                // Flash the ring for visual feedback
+                pomoRing.style.stroke = '#fff';
+                setTimeout(() => { pomoRing.style.stroke = ''; }, 600);
 
                 if (pomoIsFocus) {
                     pomoSessions++;
@@ -267,6 +382,7 @@ document.getElementById('pomo-start').addEventListener('click', function () {
     }
 });
 
+/* --- Reset --- */
 document.getElementById('pomo-reset').addEventListener('click', () => {
     clearInterval(pomoInterval);
     pomoRunning = false;
@@ -285,6 +401,7 @@ function updatePomoDots() {
         d.classList.toggle('filled', i < (pomoSessions % 5));
     });
 }
+
 
 /* =============================================================
    STOPWATCH
@@ -368,7 +485,7 @@ const OST_TRACKS = [
     { file: '17. Thorofare Hike.flac', title: 'Thorofare Hike' },
     { file: '18. Catching Up.flac', title: 'Catching Up' },
     { file: '19. Ol\' Shoshone.flac', title: "Ol' Shoshone" },
-    { file: 'Firewatch (2016) End Credits - I\'d Rather Go Blind by Etta James.mp3', title: "Firewatch End Credit" },
+    { file: 'Firewatch (2016) End Credits - I\'d Rather Go Blind by Etta James.mp3', title: "I'd Rather Go Blind — Etta James" },
 ];
 
 const ostAudio = new Audio();
@@ -716,4 +833,3 @@ document.addEventListener('keydown', (e) => {
         ostPlayBtn.click();
     }
 });
-
