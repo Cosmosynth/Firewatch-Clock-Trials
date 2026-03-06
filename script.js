@@ -827,9 +827,46 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'p' || e.key === 'P') togglePanel('pomodoro');
     if (e.key === 's' || e.key === 'S') togglePanel('stopwatch');
     if (e.key === 'o' || e.key === 'O') togglePanel('music');
+    if (e.key === 'f' || e.key === 'F') document.getElementById('btn-fullscreen').click();
     // Spacebar toggles play/pause (only if no input is focused)
     if (e.key === ' ' && document.activeElement.tagName !== 'INPUT') {
         e.preventDefault();
         ostPlayBtn.click();
     }
 });
+
+/* =============================================================
+   FULLSCREEN TOGGLE
+   ============================================================= */
+const fullscreenBtn = document.getElementById('btn-fullscreen');
+const fullscreenIcon = document.getElementById('fullscreen-icon');
+
+const FS_EXPAND_SVG = '<polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />';
+const FS_CONTRACT_SVG = '<polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" /><line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" />';
+
+function updateFullscreenIcon() {
+    const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    fullscreenIcon.innerHTML = isFS ? FS_CONTRACT_SVG : FS_EXPAND_SVG;
+    fullscreenBtn.title = isFS ? 'Exit Fullscreen' : 'Fullscreen';
+}
+
+fullscreenBtn.addEventListener('click', () => {
+    const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    if (!isFS) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+        else if (el.msRequestFullscreen) el.msRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+});
+
+document.addEventListener('fullscreenchange', updateFullscreenIcon);
+document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
