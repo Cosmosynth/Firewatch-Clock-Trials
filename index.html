@@ -139,7 +139,70 @@
 
         <!-- ====== POMODORO PANEL ====== -->
         <div class="panel pomodoro-panel" id="pomodoro-panel">
-            <div class="panel-title">Pomodoro Timer</div>
+            <div class="pomo-header">
+                <div class="panel-title">Pomodoro Timer</div>
+                <div class="pomo-header-btns">
+                    <button class="pomo-icon-btn" id="pomo-sound-toggle" aria-label="Toggle sound" title="Sound On">
+                        <svg viewBox="0 0 24 24">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                        </svg>
+                    </button>
+                    <button class="pomo-icon-btn" id="pomo-settings-toggle" aria-label="Timer settings"
+                        title="Settings">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Presets row -->
+            <div class="pomo-presets" id="pomo-presets">
+                <button class="pomo-preset active" data-focus="25" data-short="5" data-long="15">25/5</button>
+                <button class="pomo-preset" data-focus="45" data-short="5" data-long="15">45/5</button>
+                <button class="pomo-preset" data-focus="50" data-short="10" data-long="20">50/10</button>
+                <button class="pomo-preset" data-focus="90" data-short="15" data-long="30">90/15</button>
+            </div>
+
+            <!-- Custom settings (collapsed by default) -->
+            <div class="pomo-custom-settings" id="pomo-custom-settings">
+                <div class="pomo-setting-row">
+                    <label for="pomo-custom-focus">Focus</label>
+                    <div class="pomo-setting-input-wrap">
+                        <button class="pomo-stepper" data-target="pomo-custom-focus" data-dir="-1">−</button>
+                        <input type="number" id="pomo-custom-focus" class="pomo-setting-input" value="25" min="1"
+                            max="180" />
+                        <button class="pomo-stepper" data-target="pomo-custom-focus" data-dir="1">+</button>
+                        <span class="pomo-setting-unit">min</span>
+                    </div>
+                </div>
+                <div class="pomo-setting-row">
+                    <label for="pomo-custom-short">Short Break</label>
+                    <div class="pomo-setting-input-wrap">
+                        <button class="pomo-stepper" data-target="pomo-custom-short" data-dir="-1">−</button>
+                        <input type="number" id="pomo-custom-short" class="pomo-setting-input" value="5" min="1"
+                            max="60" />
+                        <button class="pomo-stepper" data-target="pomo-custom-short" data-dir="1">+</button>
+                        <span class="pomo-setting-unit">min</span>
+                    </div>
+                </div>
+                <div class="pomo-setting-row">
+                    <label for="pomo-custom-long">Long Break</label>
+                    <div class="pomo-setting-input-wrap">
+                        <button class="pomo-stepper" data-target="pomo-custom-long" data-dir="-1">−</button>
+                        <input type="number" id="pomo-custom-long" class="pomo-setting-input" value="15" min="1"
+                            max="60" />
+                        <button class="pomo-stepper" data-target="pomo-custom-long" data-dir="1">+</button>
+                        <span class="pomo-setting-unit">min</span>
+                    </div>
+                </div>
+                <button class="pomo-apply-btn" id="pomo-apply-custom">Apply Custom</button>
+            </div>
+
             <div class="pomo-ring-container">
                 <svg class="pomo-ring" width="100" height="100" viewBox="0 0 100 100">
                     <circle class="pomo-ring-bg" cx="50" cy="50" r="42" />
@@ -280,7 +343,6 @@
     <script defer src="/_vercel/insights/script.js"></script>
 
 </body>
-
 
 
 </html>
