@@ -127,13 +127,13 @@
                 <span>Stopwatch</span>
             </button>
             <div class="toolbar-divider"></div>
-            <button class="toolbar-btn" id="btn-music" aria-label="Lofi Music">
+            <button class="toolbar-btn" id="btn-music" aria-label="Firewatch OST">
                 <svg viewBox="0 0 24 24">
                     <path d="M9 18V5l12-2v13" />
                     <circle cx="6" cy="18" r="3" />
                     <circle cx="18" cy="16" r="3" />
                 </svg>
-                <span>Lofi</span>
+                <span>OST</span>
             </button>
         </div>
 
@@ -175,35 +175,91 @@
             </div>
         </div>
 
-        <!-- ====== MUSIC PANEL ====== -->
+        <!-- ====== MUSIC PANEL (Firewatch OST) ====== -->
         <div class="panel music-panel" id="music-panel">
-            <div class="panel-title">Lofi Radio</div>
-            <div class="music-now-playing">
-                <div class="music-visualizer" id="music-visualizer">
+            <div class="panel-title">Firewatch OST</div>
+
+            <!-- Now-playing area -->
+            <div class="ost-now-playing">
+                <div class="ost-visualizer" id="ost-visualizer">
                     <div class="music-bar"></div>
                     <div class="music-bar"></div>
                     <div class="music-bar"></div>
                     <div class="music-bar"></div>
                     <div class="music-bar"></div>
                 </div>
-                <div class="music-track-info">
-                    <span class="music-track-name">Lofi Girl Radio</span>
-                    <span class="music-track-artist">beats to relax / study to</span>
+                <div class="ost-track-info">
+                    <span class="ost-track-name" id="ost-track-name">No track selected</span>
+                    <span class="ost-track-number" id="ost-track-number">— / —</span>
                 </div>
             </div>
-            <div class="music-controls">
-                <button class="music-play-btn" id="music-play-btn" aria-label="Play or pause music">
-                    <svg id="music-play-icon" viewBox="0 0 24 24">
+
+            <!-- Progress bar -->
+            <div class="ost-progress-wrap">
+                <span class="ost-time" id="ost-time-current">0:00</span>
+                <div class="ost-progress-bar" id="ost-progress-bar">
+                    <div class="ost-progress-fill" id="ost-progress-fill"></div>
+                    <div class="ost-progress-thumb" id="ost-progress-thumb"></div>
+                </div>
+                <span class="ost-time" id="ost-time-total">0:00</span>
+            </div>
+
+            <!-- Main controls -->
+            <div class="ost-controls">
+                <button class="ost-ctrl-btn" id="ost-shuffle" aria-label="Shuffle" title="Shuffle">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="16 3 21 3 21 8" />
+                        <line x1="4" y1="20" x2="21" y2="3" />
+                        <polyline points="21 16 21 21 16 21" />
+                        <line x1="15" y1="15" x2="21" y2="21" />
+                        <line x1="4" y1="4" x2="9" y2="9" />
+                    </svg>
+                </button>
+                <button class="ost-ctrl-btn" id="ost-prev" aria-label="Previous track" title="Previous">
+                    <svg viewBox="0 0 24 24">
+                        <polygon points="19 20 9 12 19 4 19 20" />
+                        <line x1="5" y1="19" x2="5" y2="5" />
+                    </svg>
+                </button>
+                <button class="ost-play-btn" id="ost-play" aria-label="Play or pause">
+                    <svg id="ost-play-icon" viewBox="0 0 24 24">
                         <polygon points="6,3 20,12 6,21" />
                     </svg>
                 </button>
-                <div class="music-volume">
+                <button class="ost-ctrl-btn" id="ost-next" aria-label="Next track" title="Next">
                     <svg viewBox="0 0 24 24">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                        <polygon points="5 4 15 12 5 20 5 4" />
+                        <line x1="19" y1="5" x2="19" y2="19" />
                     </svg>
-                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="40" />
-                </div>
+                </button>
+                <button class="ost-ctrl-btn" id="ost-repeat" aria-label="Repeat" title="Repeat">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="17 1 21 5 17 9" />
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                        <polyline points="7 23 3 19 7 15" />
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Volume -->
+            <div class="ost-volume">
+                <svg viewBox="0 0 24 24">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                </svg>
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="60" />
+            </div>
+
+            <!-- Track list (collapsed by default) -->
+            <button class="ost-tracklist-toggle" id="ost-tracklist-toggle">
+                <span>Track List</span>
+                <svg viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+            <div class="ost-tracklist" id="ost-tracklist">
+                <!-- populated by JS -->
             </div>
         </div>
 
@@ -216,8 +272,7 @@
 
     </main>
 
-    <!-- Hidden Lofi iframe -->
-    <iframe id="lofi-iframe" allow="autoplay" src=""></iframe>
+
 
     <script src="script.js"></script>
 
