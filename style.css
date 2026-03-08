@@ -80,15 +80,15 @@ body {
 }
 
 .bg-sunset {
-    background-image: url('sunset-bg.jpg');
+    background-image: url('wallpapers/sunset-bg.jpg');
 }
 
 .bg-night {
-    background-image: url('night-bg.jpg');
+    background-image: url('wallpapers/night-bg.jpg');
 }
 
 .bg-evening {
-    background-image: url('evening-bg.png');
+    background-image: url('wallpapers/evening-bg.png');
 }
 
 body[data-theme="sunset"] .bg-sunset {
