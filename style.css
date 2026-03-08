@@ -1686,6 +1686,33 @@ body[data-theme="evening"] .bg-evening {
 }
 
 /* ================================================================
+   SEO CONTENT — visually hidden, accessible to crawlers
+   ================================================================ */
+.seo-content {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Reset h1/p inside welcome overlay so semantic tags don't change visual */
+.welcome-overlay h1.welcome-title {
+    margin: 0;
+    padding: 0;
+}
+
+.welcome-overlay p.welcome-sub {
+    margin: 0;
+    margin-top: 0.3rem;
+    padding: 0;
+}
+
+/* ================================================================
    UTILITY
    ================================================================ */
 .hidden {

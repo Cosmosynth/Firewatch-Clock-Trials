@@ -5,21 +5,146 @@
     <meta charset="UTF-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <title>Firewatch Dashboard</title>
-    <meta name="description" content="A minimalist Firewatch-themed time and weather dashboard." />
 
+    <!-- ====== PRIMARY SEO ====== -->
+    <title>Firewatch Dashboard — Free Firewatch-Inspired Clock, Timer & Ambient Productivity Tool</title>
+    <meta name="description"
+        content="Firewatch Dashboard is a free, beautifully designed Firewatch-inspired productivity tool featuring a live clock, Pomodoro timer, stopwatch, and the official Firewatch OST player. Inspired by Campo Santo's Firewatch game." />
+    <meta name="keywords"
+        content="firewatch, firewatch dashboard, firewatch clock, firewatch timer, firewatch wallpaper, firewatch aesthetic, firewatch inspired, firewatch game, firewatch background, firewatch desktop, firewatch pomodoro, firewatch productivity, firewatch ambient, firewatch ost, firewatch soundtrack, firewatch music, campo santo, firewatch art style, firewatch sunset, firewatch night, firewatch lookout tower, firewatch online, firewatch web app, firewatch theme, firewatch browser, aesthetic clock, aesthetic dashboard, ambient productivity, lo-fi dashboard, nature dashboard, forest dashboard, ranger dashboard, national park aesthetic, wilderness clock" />
+    <meta name="author" content="Hasya" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="theme-color" content="#E8734A" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="application-name" content="Firewatch Dashboard" />
+    <meta name="apple-mobile-web-app-title" content="Firewatch Dashboard" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- ====== CANONICAL URL (update to your real domain) ====== -->
+    <link rel="canonical" href="https://firewatch-outpost.vercel.app/" />
+
+    <!-- ====== OPEN GRAPH (Facebook, Discord, LinkedIn, etc.) ====== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Firewatch Dashboard — Firewatch-Inspired Productivity Tool" />
+    <meta property="og:description"
+        content="A stunning Firewatch-inspired dashboard with a live clock, Pomodoro timer, stopwatch, and the official Firewatch OST player. Free and open in your browser." />
+    <meta property="og:image" content="/wallpapers/sunset-bg.jpg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="Firewatch Dashboard — sunset mountain landscape with a clock overlay" />
+    <meta property="og:site_name" content="Firewatch Dashboard" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://firewatch-outpost.vercel.app/" />
+
+    <!-- ====== TWITTER CARD ====== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Firewatch Dashboard — Free Firewatch Clock & Timer" />
+    <meta name="twitter:description"
+        content="A gorgeous Firewatch-inspired dashboard with live clock, Pomodoro timer, and OST player. Try it free in your browser." />
+    <meta name="twitter:image" content="/wallpapers/sunset-bg.jpg" />
+    <meta name="twitter:image:alt" content="Firewatch Dashboard preview — sunset mountain aesthetic" />
+
+    <!-- ====== JSON-LD STRUCTURED DATA ====== -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Firewatch Dashboard",
+        "alternateName": ["Firewatch Clock", "Firewatch Timer", "Firewatch Pomodoro", "Firewatch OST Player"],
+        "description": "A beautifully designed Firewatch-inspired productivity dashboard featuring a live clock, Pomodoro timer, stopwatch, and the official Firewatch OST soundtrack player. Inspired by Campo Santo's award-winning game Firewatch.",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Hasya"
+        },
+        "screenshot": "/wallpapers/sunset-bg.jpg",
+        "keywords": "firewatch, firewatch dashboard, firewatch clock, firewatch timer, firewatch pomodoro, firewatch OST, campo santo, aesthetic dashboard, ambient productivity",
+        "about": {
+            "@type": "VideoGame",
+            "name": "Firewatch",
+            "creator": {
+                "@type": "Organization",
+                "name": "Campo Santo"
+            },
+            "genre": "Adventure"
+        }
+    }
+    </script>
+
+    <!-- ====== ADDITIONAL STRUCTURED DATA — FAQ (boosts rich snippets) ====== -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is Firewatch Dashboard?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Firewatch Dashboard is a free, browser-based productivity tool inspired by the art style and atmosphere of the video game Firewatch by Campo Santo. It features a beautiful live clock, a Pomodoro timer for focused work sessions, a stopwatch, and an integrated Firewatch Original Soundtrack (OST) player."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is Firewatch Dashboard free to use?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Firewatch Dashboard is completely free to use. Simply open it in your web browser and enjoy the Firewatch-inspired aesthetic while staying productive."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does it include the Firewatch soundtrack?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, the dashboard includes a built-in Firewatch OST (Original Soundtrack) player with playback controls including shuffle, repeat, volume control, and a full track list."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I use Firewatch Dashboard as a Pomodoro timer?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely. Firewatch Dashboard includes a full-featured Pomodoro timer with customizable focus, short break, and long break durations, preset time configurations, session tracking dots, and optional sound notifications."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <!-- ====== FAVICONS & MANIFEST ====== -->
     <link rel="icon" type="image/png" href="icon/firewatch_icon.png" />
+    <link rel="apple-touch-icon" href="icon/firewatch_icon.png" />
+    <link rel="manifest" href="manifest.json" />
 
+    <!-- ====== FONTS ====== -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&family=Caveat:wght@500&display=swap"
         rel="stylesheet" />
 
+    <!-- ====== PRELOAD CRITICAL ASSETS ====== -->
+    <link rel="preload" href="wallpapers/sunset-bg.jpg" as="image" />
+    <link rel="preload" href="style.css" as="style" />
+    <link rel="preload" href="script.js" as="script" />
+
     <link rel="stylesheet" href="style.css" />
 </head>
 
-<body data-theme="sunset">
+<body data-theme="sunset" itemscope itemtype="https://schema.org/WebApplication">
 
     <!-- Background Layers -->
     <div class="bg-layer bg-sunset"></div>
@@ -44,8 +169,9 @@
                 <line x1="24" y1="60" x2="40" y2="60" />
             </svg>
         </div>
-        <div class="welcome-title">FIREWATCH CLOCK</div>
-        <div class="welcome-sub">Inspired by the game Firewatch</div>
+        <h1 class="welcome-title" itemprop="name">FIREWATCH DASHBOARD</h1>
+        <p class="welcome-sub" itemprop="description">Firewatch-inspired clock, timer &amp; ambient productivity tool
+        </p>
         <div class="welcome-line"></div>
         <div class="welcome-credit">made by <span class="welcome-credit-name">Hasya</span></div>
     </div>
@@ -348,7 +474,52 @@
 
     </main>
 
+    <!-- ====== SEO CONTENT — visually hidden, search-engine visible ====== -->
+    <section class="seo-content" aria-hidden="true">
+        <h2>Firewatch Dashboard — Your Free Firewatch-Inspired Productivity Tool</h2>
+        <p>Firewatch Dashboard is a stunning, free web application inspired by <strong>Firewatch</strong>, the
+            award-winning first-person adventure game by <strong>Campo Santo</strong>. Featuring the iconic layered
+            mountain sunset art style from Firewatch, this dashboard brings the serene wilderness aesthetic of the
+            Shoshone National Forest directly to your browser.</p>
+        <h3>Features of Firewatch Dashboard</h3>
+        <ul>
+            <li><strong>Live Firewatch Clock</strong> — A beautiful real-time clock rendered against Firewatch-style
+                sunset, evening, and night backgrounds with dynamic theme switching.</li>
+            <li><strong>Firewatch Pomodoro Timer</strong> — Stay focused with a Pomodoro timer featuring preset
+                configurations (25/5, 45/5, 50/10, 90/15), customizable durations, session tracking, and optional sound
+                alerts.</li>
+            <li><strong>Stopwatch</strong> — A precise stopwatch with lap functionality for time tracking.</li>
+            <li><strong>Firewatch OST Player</strong> — Listen to the complete Firewatch Original Soundtrack by Chris
+                Remo with playback controls, shuffle, repeat, volume control, and a full track list.</li>
+            <li><strong>Multiple Themes</strong> — Switch between Firewatch sunset, Firewatch night, and Firewatch
+                evening backgrounds, each faithfully recreating iconic scenes from the game.</li>
+            <li><strong>Particle Effects</strong> — Ambient floating particles reminiscent of fireflies and dust motes
+                in the Firewatch wilderness.</li>
+        </ul>
+        <h3>About Firewatch</h3>
+        <p>Firewatch is a mystery adventure game developed by Campo Santo and published by Panic. Set in the Wyoming
+            wilderness, players take on the role of a fire lookout named Henry stationed at a fire lookout tower in
+            Shoshone National Forest during the summer of 1989. The game is renowned for its breathtaking art direction
+            featuring layered mountain silhouettes, warm sunset gradients, and tranquil forest scenery — all of which
+            inspired this Firewatch Dashboard.</p>
+        <h3>Who Is This For?</h3>
+        <p>Whether you're a fan of Firewatch looking for a Firewatch wallpaper alternative, a student seeking a
+            beautiful Firewatch-themed Pomodoro timer, or someone who loves ambient aesthetic dashboards inspired by
+            nature and wilderness, Firewatch Dashboard is the perfect free tool for your desktop or browser new tab
+            page.</p>
+    </section>
 
+    <!-- ====== NOSCRIPT FALLBACK ====== -->
+    <noscript>
+        <div
+            style="text-align:center;padding:3rem;color:#fff;background:#1a1a2e;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <h1>Firewatch Dashboard</h1>
+            <p>A free, Firewatch-inspired productivity dashboard with a live clock, Pomodoro timer, stopwatch, and
+                Firewatch OST player.</p>
+            <p>Please enable JavaScript to experience the full Firewatch Dashboard.</p>
+            <p>Inspired by Firewatch by Campo Santo. Features Firewatch sunset, night, and evening themes.</p>
+        </div>
+    </noscript>
 
     <script src="script.js"></script>
 
@@ -356,6 +527,5 @@
     <script defer src="/_vercel/insights/script.js"></script>
 
 </body>
-
 
 </html>

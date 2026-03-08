@@ -1,0 +1,27 @@
+{
+    "name": "Firewatch Dashboard",
+    "short_name": "Firewatch",
+    "description": "A free, beautifully designed Firewatch-inspired productivity dashboard with a live clock, Pomodoro timer, stopwatch, and Firewatch OST player.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a1a2e",
+    "theme_color": "#E8734A",
+    "orientation": "any",
+    "categories": ["productivity", "utilities", "entertainment"],
+    "icons": [
+        {
+            "src": "icon/firewatch_icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "wallpapers/sunset-bg.jpg",
+            "sizes": "1920x1080",
+            "type": "image/jpeg",
+            "label": "Firewatch Dashboard — Sunset Theme"
+        }
+    ]
+}
