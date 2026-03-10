@@ -12,15 +12,6 @@ $$ \lim_{\text{distractions} \to 0} \left( \text{Productivity} \right) = \infty 
 - **🎵 Firewatch OST & Lofi Audio Player**: Seamlessly switch between the game's original soundtrack and a persistent Lofi radio stream. Complete with track management, progress bar, spacebar play/pause toggles, and volume controls.
 - **🕰️ Draggable Clock & UI**: Tweak and position your timeline where it best suits your workflow.
 
-## 🚀 Getting Started
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/firewatch-dashboard.git
-   ```
-2. **Launch the Lookout**:
-   Simply open `index.html` in your favorite modern browser. No complex build pipelines or package managers required. Pure Vanilla Web Tech.
-
 ## 🛠️ Built With
 
 - **HTML5**: Semantic, accessible, and clean structural foundation.
