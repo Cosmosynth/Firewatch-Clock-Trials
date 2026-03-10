@@ -276,9 +276,9 @@ body[data-theme="evening"] .bg-evening {
 }
 
 /* ================================================================
-   WEATHER WIDGET — top-left
+   MUSIC STATUS WIDGET (Top-left, Shared for OST & Lofi)
    ================================================================ */
-.weather {
+.music-status-widget {
     position: fixed;
     top: 2rem;
     left: 2rem;
@@ -291,17 +291,24 @@ body[data-theme="evening"] .bg-evening {
     border-radius: 1rem;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    transition: background var(--transition-theme), border-color var(--transition-theme);
+    transition: opacity 0.5s ease, border-color 0.5s ease, background var(--transition-theme);
     z-index: 10;
+    opacity: 0.6;
 }
 
-.weather-icon {
-    width: 2rem;
-    height: 2rem;
+.music-status-widget.playing {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(255, 158, 100, 0.1);
+}
+
+.music-status-icon {
+    width: 1.8rem;
+    height: 1.8rem;
     flex-shrink: 0;
 }
 
-.weather-icon svg {
+.music-status-icon svg {
     width: 100%;
     height: 100%;
     fill: none;
@@ -309,28 +316,109 @@ body[data-theme="evening"] .bg-evening {
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: stroke var(--transition-theme);
 }
 
-.weather-info {
+.lofi-info {
     display: flex;
     flex-direction: column;
-    line-height: 1.2;
+    overflow: hidden;
+    max-width: 180px;
 }
 
-.weather-temp {
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+.lofi-status {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
 }
 
-.weather-condition {
-    font-size: 0.75rem;
+.lofi-scroll-container {
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    /* Allow children to sit side-by-side */
+    width: 100%;
+    /* Keep max width contained */
+    position: relative;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.lofi-track-name {
+    display: inline-block;
+    font-size: 0.8rem;
     font-weight: 400;
+    color: var(--text-primary);
+    padding-right: 3rem;
+    /* Spacing between the original and duplicate */
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/*
+   We wrap both spans in the animation.
+   When playing, BOTH spans slide to the left precisely the width of ONE span.
+*/
+.music-status-widget.playing .lofi-track-name {
+    animation: lofiScroll 15s linear infinite;
+}
+
+@keyframes lofiScroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.music-panel.lofi-mode .ost-now-playing,
+.music-panel.lofi-mode .ost-progress-wrap,
+.music-panel.lofi-mode .ost-tracklist {
+    display: none;
+}
+
+.music-panel.lofi-mode .lofi-tracklist {
+    display: block;
+    /* Overrides the default display:none */
+}
+
+/* ================================================================
+   MUSIC MODE TOGGLE
+   ================================================================ */
+.music-mode-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.8rem;
+    padding: 3px;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--widget-border);
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
     color: var(--text-secondary);
+    font-size: 0.65rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    transition: color var(--transition-theme);
+    cursor: pointer;
+    border-radius: 0.6rem;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+    background: var(--accent);
+    color: #1a1a2e;
+}
+
+.panel.music-panel .panel-title {
+    margin-top: 0.5rem;
 }
 
 /* ================================================================
@@ -1172,28 +1260,38 @@ body[data-theme="evening"] .bg-evening {
 }
 
 /* ---- Track list ---- */
-.ost-tracklist {
+.ost-tracklist,
+.lofi-tracklist {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(.4, 0, .2, 1);
+    transition: max-height 0.3s ease;
+    border-radius: 0.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    margin-top: 1rem;
 }
 
-.ost-tracklist.open {
-    max-height: 240px;
+.lofi-tracklist {
+    display: none;
+    /* Hidden by default, shown in lofi-mode */
+}
+
+.ost-tracklist.open,
+.lofi-tracklist.open {
+    max-height: 250px;
     overflow-y: auto;
+    padding: 0.5rem;
 }
 
-.ost-tracklist::-webkit-scrollbar {
-    width: 4px;
+/* Custom Scrollbar for tracklists */
+.ost-tracklist::-webkit-scrollbar,
+.lofi-tracklist::-webkit-scrollbar {
+    width: 6px;
 }
 
-.ost-tracklist::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.ost-tracklist::-webkit-scrollbar-thumb {
-    background: var(--widget-border);
-    border-radius: 2px;
+.ost-tracklist::-webkit-scrollbar-thumb,
+.lofi-tracklist::-webkit-scrollbar-thumb {
+    background: rgba(255, 158, 100, 0.3);
+    border-radius: 10px;
 }
 
 .ost-tracklist-item {

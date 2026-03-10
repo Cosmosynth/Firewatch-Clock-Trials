@@ -1,13 +1,13 @@
 {
-    "name": "Firewatch Dashboard",
+    "name": "Firewatch Dashboard — Study Pomodoro & Clock",
     "short_name": "Firewatch",
-    "description": "A free, beautifully designed Firewatch-inspired productivity dashboard with a live clock, Pomodoro timer, stopwatch, and Firewatch OST player.",
+    "description": "The only Firewatch-inspired study dashboard with a study pomodoro, study clock, study timer, and official OST.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#1a1a2e",
     "theme_color": "#E8734A",
     "orientation": "any",
-    "categories": ["productivity", "utilities", "entertainment"],
+    "categories": ["productivity", "education", "utilities"],
     "icons": [
         {
             "src": "icon/firewatch_icon.png",

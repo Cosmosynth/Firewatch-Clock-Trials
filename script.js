@@ -514,7 +514,9 @@ const ostVisualizer = document.getElementById('ost-visualizer');
 const volumeSlider = document.getElementById('volume-slider');
 const ostMusicBars = ostVisualizer.querySelectorAll('.music-bar');
 const ostTracklistToggle = document.getElementById('ost-tracklist-toggle');
+const tracklistToggleText = document.getElementById('tracklist-toggle-text');
 const ostTracklist = document.getElementById('ost-tracklist');
+const lofiTracklist = document.getElementById('lofi-tracklist');
 
 const PLAY_SVG = '<polygon points="6,3 20,12 6,21" />';
 const PAUSE_SVG = '<rect x="5" y="3" width="5" height="18" rx="1" /><rect x="14" y="3" width="5" height="18" rx="1" />';
@@ -534,6 +536,7 @@ let tracklistOpen = false;
 ostTracklistToggle.addEventListener('click', () => {
     tracklistOpen = !tracklistOpen;
     ostTracklist.classList.toggle('open', tracklistOpen);
+    lofiTracklist.classList.toggle('open', tracklistOpen);
     ostTracklistToggle.classList.toggle('open', tracklistOpen);
 });
 
@@ -574,6 +577,12 @@ function loadTrack(index) {
     ostTrackName.textContent = track.title;
     ostTrackNumber.textContent = `${index + 1} / ${OST_TRACKS.length}`;
     highlightTracklistItem();
+
+    // Sync top-left widget if in OST mode
+    if (musicMode === 'ost') {
+        lofiStatusText.textContent = "Now Playing";
+        updateTrackNameDisplay(track.title);
+    }
 }
 
 function playTrack() {
@@ -581,6 +590,12 @@ function playTrack() {
         ostIsPlaying = true;
         ostPlayIcon.innerHTML = PAUSE_SVG;
         ostMusicBars.forEach(b => b.classList.add('playing'));
+
+        // Sync top-left widget
+        if (musicMode === 'ost') {
+            lofiStatusText.textContent = "Now Playing";
+            lofiWidget.classList.add('playing');
+        }
     }).catch(e => console.warn('Audio play error:', e));
 }
 
@@ -589,9 +604,23 @@ function pauseTrack() {
     ostIsPlaying = false;
     ostPlayIcon.innerHTML = PLAY_SVG;
     ostMusicBars.forEach(b => b.classList.remove('playing'));
+
+    // Sync top-left widget
+    if (musicMode === 'ost') {
+        lofiStatusText.textContent = "Paused";
+        lofiWidget.classList.remove('playing');
+    }
 }
 
 function nextTrack() {
+    if (musicMode === 'lofi') {
+        let nextIdx = lofiCurrentIndex + 1;
+        if (nextIdx >= LOFI_STATIONS.length) nextIdx = 0;
+        loadLofiStation(nextIdx);
+        if (lofiIsPlaying) playLofi();
+        return;
+    }
+
     let nextIdx;
     if (ostShuffleOn) {
         ostShufflePos++;
@@ -621,6 +650,14 @@ function nextTrack() {
 }
 
 function prevTrack() {
+    if (musicMode === 'lofi') {
+        let prevIdx = lofiCurrentIndex - 1;
+        if (prevIdx < 0) prevIdx = LOFI_STATIONS.length - 1;
+        loadLofiStation(prevIdx);
+        if (lofiIsPlaying) playLofi();
+        return;
+    }
+
     // If more than 3 seconds in, restart current track
     if (ostAudio.currentTime > 3) {
         ostAudio.currentTime = 0;
@@ -640,18 +677,7 @@ function prevTrack() {
 }
 
 // --- Event Listeners ---
-ostPlayBtn.addEventListener('click', () => {
-    if (!ostAudio.src || ostAudio.src === window.location.href) {
-        // First time — load track 0
-        loadTrack(0);
-        if (ostShuffleOn) generateShuffleQueue();
-        playTrack();
-    } else if (ostIsPlaying) {
-        pauseTrack();
-    } else {
-        playTrack();
-    }
-});
+// ostPlayBtn listener moved to dual-mode handler below
 
 ostNextBtn.addEventListener('click', nextTrack);
 ostPrevBtn.addEventListener('click', prevTrack);
@@ -716,35 +742,183 @@ window.addEventListener('mouseup', () => { ostSeeking = false; });
 // Volume
 ostAudio.volume = parseInt(volumeSlider.value) / 100;
 volumeSlider.addEventListener('input', () => {
-    ostAudio.volume = parseInt(volumeSlider.value) / 100;
+    const vol = parseInt(volumeSlider.value) / 100;
+    ostAudio.volume = vol;
+    if (typeof lofiAudio !== 'undefined') {
+        lofiAudio.volume = vol;
+    }
 });
 
 /* =============================================================
-   MOCK WEATHER
+   LOFI RADIO (Direct HTML5 Audio Stream)
    ============================================================= */
-async function fetchWeather() {
-    return { temp: 24, condition: 'Clear Skies', icon: 'sun' };
+const LOFI_STATIONS = [
+    { title: "Zeno FM | Chill Beats", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
+    // { title: "Chillsky | Lofi Hip-Hop", file: "https://chillsky.com/stream" },
+    { title: "FluxFM | Chillhop (320k)", file: "https://channels.fluxfm.de/chillhop/externalembedflxhp/stream.mp3" },
+    { title: "SomaFM | Secret Agent", file: "https://ice1.somafm.com/secretagent-128-aac" }
+];
+
+let lofiCurrentIndex = 0;
+const lofiAudio = new Audio(LOFI_STATIONS[lofiCurrentIndex].file);
+lofiAudio.crossOrigin = "anonymous";
+let lofiIsPlaying = false;
+let musicMode = 'ost'; // 'ost' or 'lofi'
+
+// DOM Elements
+const modeOstBtn = document.getElementById('mode-ost');
+const modeLofiBtn = document.getElementById('mode-lofi');
+const lofiWidget = document.getElementById('lofi-widget');
+const lofiStatusText = document.getElementById('lofi-status');
+const lofiTrackName = document.getElementById('lofi-track-name');
+const lofiTrackNameDup = document.getElementById('lofi-track-name-dup'); // The duplicate span for looping
+const musicPanelTitle = document.getElementById('music-panel-title');
+
+// Helper to update both spans for the seamless marquee
+function updateTrackNameDisplay(text) {
+    if (lofiTrackName) lofiTrackName.textContent = text;
+    if (lofiTrackNameDup) lofiTrackNameDup.textContent = text;
 }
 
-const weatherIconPaths = {
-    sun: `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`,
-    cloud: `<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>`,
-    rain: `<line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>`,
-    snow: `<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="9" y1="18" x2="15" y2="18"/>`,
-    storm: `<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="13 16 12 21 15 21 14 24"/>`
-};
+// --- Build Lofi track list UI ---
+LOFI_STATIONS.forEach((station, idx) => {
+    const item = document.createElement('div');
+    item.className = 'ost-tracklist-item'; // Reuse class for styling
+    item.dataset.index = idx;
+    item.innerHTML = `<span class="ost-tl-num">${String(idx + 1).padStart(2, '0')}</span><span class="ost-tl-title">${station.title}</span>`;
+    item.addEventListener('click', () => {
+        if (musicMode !== 'lofi') return;
+        loadLofiStation(idx);
+        playLofi();
+    });
+    lofiTracklist.appendChild(item);
+});
 
-async function updateWeather() {
-    try {
-        const data = await fetchWeather();
-        document.getElementById('weather-temp').textContent = `${data.temp}°C`;
-        document.getElementById('weather-condition').textContent = data.condition;
-        const svg = document.getElementById('weather-svg');
-        if (weatherIconPaths[data.icon]) svg.innerHTML = weatherIconPaths[data.icon];
-    } catch (e) { console.warn('Weather error:', e); }
+function highlightLofiItem() {
+    lofiTracklist.querySelectorAll('.ost-tracklist-item').forEach((el, i) => {
+        el.classList.toggle('active', i === lofiCurrentIndex);
+    });
 }
-updateWeather();
-setInterval(updateWeather, 600000);
+// Init highlight
+highlightLofiItem();
+
+function loadLofiStation(index) {
+    lofiCurrentIndex = index;
+    const station = LOFI_STATIONS[index];
+    lofiAudio.src = station.file;
+    highlightLofiItem();
+
+    if (musicMode === 'lofi') {
+        lofiStatusText.textContent = lofiIsPlaying ? "Live Now" : "Radio Ready";
+        updateTrackNameDisplay(station.title);
+    }
+}
+
+function playLofi() {
+    lofiStatusText.textContent = "Connecting...";
+    lofiAudio.play().then(() => {
+        lofiIsPlaying = true;
+        lofiStatusText.textContent = "Live Now";
+        lofiWidget.classList.add('playing');
+        ostPlayIcon.innerHTML = PAUSE_SVG;
+        ostMusicBars.forEach(b => b.classList.add('playing'));
+    }).catch(e => {
+        console.warn("Lofi Stream Error: ", e);
+        lofiStatusText.textContent = "Stream Offline";
+        updateTrackNameDisplay("Connection failed. Please try again later.");
+    });
+}
+
+function pauseLofi() {
+    lofiAudio.pause();
+    lofiIsPlaying = false;
+    lofiStatusText.textContent = "Paused";
+    lofiWidget.classList.remove('playing');
+    ostPlayIcon.innerHTML = PLAY_SVG;
+    ostMusicBars.forEach(b => b.classList.remove('playing'));
+}
+
+// Mode Switching Logic
+modeOstBtn.addEventListener('click', () => {
+    if (musicMode === 'ost') return;
+    musicMode = 'ost';
+    modeOstBtn.classList.add('active');
+    modeLofiBtn.classList.remove('active');
+    musicPanelTitle.textContent = "Firewatch OST";
+    document.getElementById('music-panel').classList.remove('lofi-mode');
+
+    // Update Tracklist Toggle Button
+    if (tracklistToggleText) {
+        tracklistToggleText.textContent = "Track List";
+    }
+
+    // Stop Lofi if playing
+    if (lofiIsPlaying) {
+        pauseLofi();
+    }
+
+    // Sync UI based on OST state
+    ostPlayIcon.innerHTML = ostIsPlaying ? PAUSE_SVG : PLAY_SVG;
+    ostMusicBars.forEach(b => b.classList.toggle('playing', ostIsPlaying));
+
+    // Update top-left widget
+    lofiStatusText.textContent = ostIsPlaying ? "Now Playing" : "Paused";
+    if (OST_TRACKS[ostCurrentIndex]) {
+        updateTrackNameDisplay(OST_TRACKS[ostCurrentIndex].title);
+    }
+    lofiWidget.classList.toggle('playing', ostIsPlaying);
+});
+
+modeLofiBtn.addEventListener('click', () => {
+    if (musicMode === 'lofi') return;
+    musicMode = 'lofi';
+    modeLofiBtn.classList.add('active');
+    modeOstBtn.classList.remove('active');
+    musicPanelTitle.textContent = "Lofi Live Radio";
+    document.getElementById('music-panel').classList.add('lofi-mode');
+
+    // Update Tracklist Toggle Button
+    if (tracklistToggleText) {
+        tracklistToggleText.textContent = "Station List";
+    }
+
+    // Stop OST if playing
+    if (ostIsPlaying) {
+        pauseTrack();
+    }
+
+    // Sync UI based on Lofi state
+    ostPlayIcon.innerHTML = lofiIsPlaying ? PAUSE_SVG : PLAY_SVG;
+    ostMusicBars.forEach(b => b.classList.toggle('playing', lofiIsPlaying));
+
+    // Update top-left widget
+    lofiStatusText.textContent = lofiIsPlaying ? "Live Now" : "Radio Ready";
+    updateTrackNameDisplay(LOFI_STATIONS[lofiCurrentIndex].title);
+    lofiWidget.classList.toggle('playing', lofiIsPlaying);
+});
+
+// Overriding main play button for dual mode
+ostPlayBtn.addEventListener('click', () => {
+    if (musicMode === 'ost') {
+        // Handle OST Play/Pause (Existing logic moved here for clarity)
+        if (!ostAudio.src || ostAudio.src === window.location.href) {
+            loadTrack(0);
+            if (ostShuffleOn) generateShuffleQueue();
+            playTrack();
+        } else if (ostIsPlaying) {
+            pauseTrack();
+        } else {
+            playTrack();
+        }
+    } else {
+        // Handle Lofi Play/Pause (Direct Audio)
+        if (lofiIsPlaying) {
+            pauseLofi();
+        } else {
+            playLofi();
+        }
+    }
+});
 
 /* =============================================================
    FIREFLY PARTICLE SYSTEM
