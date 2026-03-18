@@ -1,3 +1,4 @@
+![wp10531693-firewatch-4k-wallpapers](https://github.com/user-attachments/assets/e915c6b7-2a9a-4d10-8f37-f69fd8a21635)
 ## 🏔️ Overview
 
 Escape the noise. The **Firewatch Dashboard** transforms your browser into a tranquil lookout tower. Engineered for deep work, this dashboard blends a breathtaking aesthetic with robust productivity tools.
