@@ -186,24 +186,37 @@ const panels = {
     music: document.getElementById('music-panel'),
 };
 
+function closeAllPanels() {
+    Object.values(panels).forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+    document.body.classList.remove('panel-open');
+}
+
 function togglePanel(name) {
     const panel = panels[name];
     const btn = document.getElementById(`btn-${name === 'music' ? 'music' : name}`);
     const isVisible = panel.classList.contains('visible');
 
     // Close all panels
-    Object.values(panels).forEach(p => p.classList.remove('visible'));
-    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+    closeAllPanels();
 
     if (!isVisible) {
         panel.classList.add('visible');
         btn.classList.add('active');
+        document.body.classList.add('panel-open');
     }
 }
 
 document.getElementById('btn-pomodoro').addEventListener('click', () => togglePanel('pomodoro'));
 document.getElementById('btn-stopwatch').addEventListener('click', () => togglePanel('stopwatch'));
 document.getElementById('btn-music').addEventListener('click', () => togglePanel('music'));
+
+/* --- Close panels on tap outside (mobile fix) --- */
+document.addEventListener('click', (e) => {
+    // Don't close if the click was inside a panel or on a toolbar button
+    if (e.target.closest('.panel') || e.target.closest('.toolbar-btn') || e.target.closest('.toolbar')) return;
+    closeAllPanels();
+});
 
 /* =============================================================
    POMODORO TIMER

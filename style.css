@@ -1516,6 +1516,20 @@ body[data-theme="evening"] .bg-evening {
         letter-spacing: 0.12em;
     }
 
+    /* Music widget — prevent overlap with settings */
+    .music-status-widget {
+        top: 0.6rem;
+        left: 0.6rem;
+        max-width: calc(50vw - 1rem);
+        padding: 0.5rem 0.8rem;
+        gap: 0.5rem;
+        border-radius: 0.75rem;
+    }
+
+    .lofi-info {
+        max-width: 100px;
+    }
+
     /* Settings — icon-only */
     .settings-area {
         top: 0.6rem;
@@ -1578,10 +1592,23 @@ body[data-theme="evening"] .bg-evening {
         min-width: unset;
         max-width: unset;
         padding: 1.2rem 1rem !important;
+        padding-top: 0.6rem !important;
         padding-bottom: calc(1.2rem + env(safe-area-inset-bottom)) !important;
         max-height: 70vh;
         max-height: 70dvh;
         overflow-y: auto;
+    }
+
+    /* Drag handle affordance on bottom-sheet panels */
+    .panel::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 2px;
+        margin: 0 auto 0.8rem;
+        flex-shrink: 0;
     }
 
     .panel.visible {
@@ -1635,11 +1662,26 @@ body[data-theme="evening"] .bg-evening {
         font-size: 0.65rem;
     }
 
-    /* Bottom-right controls */
+    /* Bottom-right controls — stack above toolbar to avoid overlap */
     .bottom-right-controls {
-        bottom: 0.6rem;
+        bottom: 4.2rem;
         right: 0.6rem;
         gap: 0.35rem;
+        flex-direction: column;
+    }
+
+    /* Hide toolbar & bottom controls when a panel is open */
+    body.panel-open .toolbar {
+        transform: translateX(-50%) translateY(calc(100% + 1rem));
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    body.panel-open .bottom-right-controls {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
     }
 
     /* Clock positions adjusted for phones */
