@@ -211,12 +211,101 @@ document.getElementById('btn-pomodoro').addEventListener('click', () => togglePa
 document.getElementById('btn-stopwatch').addEventListener('click', () => togglePanel('stopwatch'));
 document.getElementById('btn-music').addEventListener('click', () => togglePanel('music'));
 
-/* --- Close panels on tap outside (mobile fix) --- */
+/* --- Close panels on tap outside / tap overlay --- */
 document.addEventListener('click', (e) => {
-    // Don't close if the click was inside a panel or on a toolbar button
-    if (e.target.closest('.panel') || e.target.closest('.toolbar-btn') || e.target.closest('.toolbar')) return;
+    // Don't close if the click was inside a panel, toolbar, or bottom-right controls
+    if (e.target.closest('.panel') || e.target.closest('.toolbar-btn') ||
+        e.target.closest('.toolbar') || e.target.closest('.bottom-right-controls')) return;
     closeAllPanels();
 });
+
+/* =============================================================
+   SWIPE-DOWN-TO-DISMISS (mobile bottom-sheet panels)
+   ============================================================= */
+(function () {
+    let startY = 0;
+    let currentY = 0;
+    let panelEl = null;
+    let isDragging = false;
+    const THRESHOLD = 80; // px to trigger dismiss
+
+    function getVisiblePanel() {
+        return document.querySelector('.panel.visible');
+    }
+
+    document.addEventListener('touchstart', (e) => {
+        // Only on mobile-width screens
+        if (window.innerWidth > 480) return;
+        const panel = getVisiblePanel();
+        if (!panel) return;
+
+        // Only start drag if touch is on the panel itself (not on interactive children deep inside)
+        const touch = e.touches[0];
+        const target = e.target;
+
+        // Allow drag from the panel drag-handle area (top ~40px) or panel background
+        const panelRect = panel.getBoundingClientRect();
+        const touchYInPanel = touch.clientY - panelRect.top;
+
+        // Only initiate swipe from the top handle region or non-interactive areas
+        if (touchYInPanel <= 40 || (!target.closest('button, input, a, .ost-progress-bar, .volume-slider'))) {
+            startY = touch.clientY;
+            currentY = startY;
+            panelEl = panel;
+        }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!panelEl) return;
+        const touch = e.touches[0];
+        currentY = touch.clientY;
+        const dy = currentY - startY;
+
+        // Only allow downward drag
+        if (dy > 5) {
+            if (!isDragging) {
+                isDragging = true;
+                panelEl.classList.add('swiping');
+            }
+            // Translate the panel down, with slight resistance
+            const dampened = dy * 0.85;
+            panelEl.style.transform = `translateY(${dampened}px)`;
+        }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+        if (!panelEl) return;
+        const dy = currentY - startY;
+
+        panelEl.classList.remove('swiping');
+
+        if (isDragging && dy > THRESHOLD) {
+            // Dismiss — animate out then close
+            panelEl.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+            panelEl.style.transform = 'translateY(100%)';
+            setTimeout(() => {
+                closeAllPanels();
+                panelEl.style.transition = '';
+                panelEl.style.transform = '';
+                panelEl = null;
+            }, 300);
+        } else {
+            // Snap back
+            panelEl.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)';
+            panelEl.style.transform = '';
+            setTimeout(() => {
+                if (panelEl) {
+                    panelEl.style.transition = '';
+                    panelEl = null;
+                }
+            }, 250);
+        }
+
+        isDragging = false;
+        startY = 0;
+        currentY = 0;
+    })
+})();
 
 /* =============================================================
    POMODORO TIMER
@@ -766,10 +855,26 @@ volumeSlider.addEventListener('input', () => {
    LOFI RADIO (Direct HTML5 Audio Stream)
    ============================================================= */
 const LOFI_STATIONS = [
+    { title: "Lofi Girl (Community Relay)", file: "https://play.streamafrica.net/lofiradio" },
+    { title: "Laut.FM | Lofi 24/7", file: "https://lofi.stream.laut.fm/lofi" },
+    { title: "Zeno FM | Study Lofi", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
     { title: "Zeno FM | Chill Beats", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
-    // { title: "Chillsky | Lofi Hip-Hop", file: "https://chillsky.com/stream" },
-    { title: "FluxFM | Chillhop (320k)", file: "https://channels.fluxfm.de/chillhop/externalembedflxhp/stream.mp3" },
-    { title: "SomaFM | Secret Agent", file: "https://ice1.somafm.com/secretagent-128-aac" }
+    { title: "Zeno FM | Lofi Hip Hop", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
+    { title: "Zeno FM | Box Lofi", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
+    { title: "Zeno FM | The Bootleg Boy", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
+    { title: "Fastcast4u | Chill Lofi", file: "http://usa9.fastcast4u.com/proxy/jamz?mp=/1" },
+    { title: "FluxFM | Chillhop", file: "https://channels.fluxfm.de/chillhop/externalembedflxhp/stream.mp3" },
+    { title: "Nightride FM | Chillsynth (Hi-Res AAC)", file: "https://stream.nightride.fm/chillsynth.m4a" },
+    { title: "SomaFM | Secret Agent", file: "https://ice1.somafm.com/secretagent-128-aac" },
+    { title: "SomaFM | Deep Space One (Deep Ambient)", file: "https://ice1.somafm.com/deepspaceone-128-aac" },
+    { title: "SomaFM | Groove Salad", file: "https://ice1.somafm.com/groovesalad-256-mp3" },
+    { title: "SomaFM | Drone Zone", file: "https://ice1.somafm.com/dronezone-256-mp3" },
+    { title: "SomaFM | DEF CON Radio", file: "https://ice1.somafm.com/defcon-128-aac" },
+    { title: "SomaFM | Space Station", file: "https://ice1.somafm.com/spacestation-128-aac" },
+    { title: "SomaFM | Vaporwaves", file: "https://ice1.somafm.com/vaporwaves-128-aac" },
+    { title: "SomaFM | Synphaera", file: "https://ice1.somafm.com/synphaera-128-aac" },
+    { title: "Intense Radio | Chillout (Lossless OGG)", file: "http://secure.live-streams.nl/flac.ogg" },
+    { title: "Radio Paradise | Mellow Mix (FLAC Lossless)", file: "http://stream.radioparadise.com/mellow-flac" }
 ];
 
 let lofiCurrentIndex = 0;
