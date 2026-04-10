@@ -50,6 +50,174 @@ body[data-theme="evening"] {
     --particle-color: rgba(192, 132, 252, 0.5);
 }
 
+/* ---------- ABSTRACT MOUNTAINS ---------- */
+body[data-theme="abstract-mountains"] {
+    --text-primary: #fde8d0;
+    --text-secondary: rgba(253, 232, 208, 0.7);
+    --date-color: #d4a574;
+    --accent: #e05a5a;
+    --accent-hover: #ff7676;
+    --widget-bg: rgba(20, 10, 15, 0.5);
+    --widget-border: rgba(253, 232, 208, 0.15);
+    --btn-hover-bg: rgba(224, 90, 90, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    --particle-color: rgba(224, 90, 90, 0.5);
+}
+
+/* ---------- BLACK SUNSET ---------- */
+body[data-theme="black-sunset"] {
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --date-color: #d8c8b8;
+    --accent: #ff7a00;
+    --accent-hover: #ffa34d;
+    --widget-bg: rgba(0, 0, 0, 0.6);
+    --widget-border: rgba(255, 255, 255, 0.1);
+    --btn-hover-bg: rgba(255, 122, 0, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+    --particle-color: rgba(255, 122, 0, 0.5);
+}
+
+/* ---------- CAMPO SANTO ---------- */
+body[data-theme="campo-santo"] {
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --date-color: #ffe8b3;
+    --accent: #ffd166;
+    --accent-hover: #ffe499;
+    --widget-bg: rgba(40, 20, 0, 0.45);
+    --widget-border: rgba(255, 255, 255, 0.15);
+    --btn-hover-bg: rgba(255, 209, 102, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --particle-color: rgba(255, 209, 102, 0.6);
+}
+
+/* ---------- FOREST GREEN ---------- */
+body[data-theme="forest-green"] {
+    --text-primary: #e0f8e0;
+    --text-secondary: rgba(224, 248, 224, 0.65);
+    --date-color: #a3d9b8;
+    --accent: #66cc99;
+    --accent-hover: #8ce6b3;
+    --widget-bg: rgba(10, 30, 20, 0.45);
+    --widget-border: rgba(224, 248, 224, 0.15);
+    --btn-hover-bg: rgba(102, 204, 153, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --particle-color: rgba(102, 204, 153, 0.5);
+}
+
+/* ---------- FOREST NIGHT ---------- */
+body[data-theme="forest-night"] {
+    --text-primary: #e0e0f8;
+    --text-secondary: rgba(224, 224, 248, 0.65);
+    --date-color: #b3cce6;
+    --accent: #4da6ff;
+    --accent-hover: #80bfff;
+    --widget-bg: rgba(10, 15, 30, 0.55);
+    --widget-border: rgba(224, 224, 248, 0.15);
+    --btn-hover-bg: rgba(77, 166, 255, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    --particle-color: rgba(77, 166, 255, 0.5);
+}
+
+/* ---------- PENCIL ---------- */
+body[data-theme="pencil"] {
+    --text-primary: #e0e0e0;
+    --text-secondary: rgba(224, 224, 224, 0.65);
+    --date-color: #a0a0a0;
+    --accent: #bbbbbb;
+    --accent-hover: #e0e0e0;
+    --widget-bg: rgba(10, 10, 10, 0.4);
+    --widget-border: rgba(224, 224, 224, 0.15);
+    --btn-hover-bg: rgba(187, 187, 187, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --particle-color: rgba(187, 187, 187, 0.6);
+}
+
+/* ---------- CABIN VIEW ---------- */
+body[data-theme="cabin-view"] {
+    --text-primary: #fde8d0;
+    --text-secondary: rgba(253, 232, 208, 0.7);
+    --date-color: #d4a574;
+    --accent: #ffb347;
+    --accent-hover: #ffd180;
+    --widget-bg: rgba(30, 15, 5, 0.5);
+    --widget-border: rgba(253, 232, 208, 0.15);
+    --btn-hover-bg: rgba(255, 179, 71, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    --particle-color: rgba(255, 179, 71, 0.6);
+}
+
+/* ---------- LAKESIDE SUNRISE ---------- */
+body[data-theme="lakeside-sunrise"] {
+    --text-primary: #fde8d0;
+    --text-secondary: rgba(253, 232, 208, 0.7);
+    --date-color: #d4a574;
+    --accent: #ff9999;
+    --accent-hover: #ffb3b3;
+    --widget-bg: rgba(40, 20, 25, 0.45);
+    --widget-border: rgba(253, 232, 208, 0.15);
+    --btn-hover-bg: rgba(255, 153, 153, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --particle-color: rgba(255, 153, 153, 0.6);
+}
+
+/* ---------- LAKESIDE SUNSET ---------- */
+body[data-theme="lakeside-sunset"] {
+    --text-primary: #fde8d0;
+    --text-secondary: rgba(253, 232, 208, 0.7);
+    --date-color: #d4a574;
+    --accent: #ff6b6b;
+    --accent-hover: #ff9999;
+    --widget-bg: rgba(35, 10, 10, 0.5);
+    --widget-border: rgba(253, 232, 208, 0.15);
+    --btn-hover-bg: rgba(255, 107, 107, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    --particle-color: rgba(255, 107, 107, 0.6);
+}
+
+/* ---------- MINIMAL SUNRISE ---------- */
+body[data-theme="minimal-sunrise"] {
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --date-color: #e6ccff;
+    --accent: #ffb6c1;
+    --accent-hover: #ffd0d6;
+    --widget-bg: rgba(50, 20, 40, 0.4);
+    --widget-border: rgba(255, 255, 255, 0.15);
+    --btn-hover-bg: rgba(255, 182, 193, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.3);
+    --particle-color: rgba(255, 182, 193, 0.5);
+}
+
+/* ---------- VALLEY ---------- */
+body[data-theme="valley"] {
+    --text-primary: #e8d5f5;
+    --text-secondary: rgba(232, 213, 245, 0.65);
+    --date-color: #b89cc8;
+    --accent: #c084fc;
+    --accent-hover: #d4a5ff;
+    --widget-bg: rgba(30, 10, 40, 0.45);
+    --widget-border: rgba(232, 213, 245, 0.15);
+    --btn-hover-bg: rgba(192, 132, 252, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+    --particle-color: rgba(192, 132, 252, 0.5);
+}
+
+/* ---------- BOAT SEA RED ---------- */
+body[data-theme="boat-sea-red"] {
+    --text-primary: #fde8d0;
+    --text-secondary: rgba(253, 232, 208, 0.7);
+    --date-color: #d4a574;
+    --accent: #ff4d4d;
+    --accent-hover: #ff8080;
+    --widget-bg: rgba(40, 10, 10, 0.55);
+    --widget-border: rgba(253, 232, 208, 0.15);
+    --btn-hover-bg: rgba(255, 77, 77, 0.15);
+    --clock-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    --particle-color: rgba(255, 77, 77, 0.5);
+}
+
 /* ================================================================
    BACKGROUND LAYERS — 3-layer crossfade
    ================================================================ */
@@ -100,6 +268,34 @@ body[data-theme="night"] .bg-night {
 }
 
 body[data-theme="evening"] .bg-evening {
+    opacity: 1;
+}
+
+.bg-abstract-mountains { background-image: url('wallpapers/Abstract-mountains-wallpapers.jpg'); }
+.bg-black-sunset { background-image: url('wallpapers/Firewatch-black-sunset.jpg'); }
+.bg-campo-santo { background-image: url('wallpapers/Firewatch-campo-santo.png'); }
+.bg-forest-green { background-image: url('wallpapers/Firewatch-forest-green.jpg'); }
+.bg-forest-night { background-image: url('wallpapers/Firewatch-forest-night.png'); }
+.bg-pencil { background-image: url('wallpapers/Firewatch-pencil.png'); }
+.bg-cabin-view { background-image: url('wallpapers/Firewatch-wallpapers-cabin-view.jpg'); }
+.bg-lakeside-sunrise { background-image: url('wallpapers/Lakeside-sunrise.png'); }
+.bg-lakeside-sunset { background-image: url('wallpapers/Lakeside-sunset.png'); }
+.bg-minimal-sunrise { background-image: url('wallpapers/Minimal-sunrise-lake.jpg'); }
+.bg-valley { background-image: url('wallpapers/Valley.png'); }
+.bg-boat-sea-red { background-image: url('wallpapers/boat-sea-red.jpg'); }
+
+body[data-theme="abstract-mountains"] .bg-abstract-mountains,
+body[data-theme="black-sunset"] .bg-black-sunset,
+body[data-theme="campo-santo"] .bg-campo-santo,
+body[data-theme="forest-green"] .bg-forest-green,
+body[data-theme="forest-night"] .bg-forest-night,
+body[data-theme="pencil"] .bg-pencil,
+body[data-theme="cabin-view"] .bg-cabin-view,
+body[data-theme="lakeside-sunrise"] .bg-lakeside-sunrise,
+body[data-theme="lakeside-sunset"] .bg-lakeside-sunset,
+body[data-theme="minimal-sunrise"] .bg-minimal-sunrise,
+body[data-theme="valley"] .bg-valley,
+body[data-theme="boat-sea-red"] .bg-boat-sea-red {
     opacity: 1;
 }
 
@@ -1553,20 +1749,27 @@ body[data-theme="evening"] .bg-evening {
         height: 1.1rem;
     }
 
-    /* Toolbar — bottom, icons only */
+    /* ============================================================
+       COMPACT CENTERED TOOLBAR
+       ============================================================ */
     .toolbar {
-        bottom: 0.6rem;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
         gap: 0.15rem;
-        padding: 0.3rem 0.5rem;
-        border-radius: 0.8rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 1rem;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.3s ease,
+                    background var(--transition-theme), border-color var(--transition-theme);
     }
 
     .toolbar-btn {
-        padding: 0.5rem;
+        padding: 0.5rem 0.7rem;
         font-size: 0;
         gap: 0;
-        min-width: 38px;
-        min-height: 38px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 0.8rem;
     }
 
     .toolbar-btn svg {
@@ -1579,40 +1782,120 @@ body[data-theme="evening"] .bg-evening {
     }
 
     .toolbar-divider {
-        height: 1.2rem;
+        height: 1.4rem;
+        margin: 0 0.1rem;
     }
 
-    /* Panels — bottom sheet style */
+    /* ============================================================
+       SHOW FULLSCREEN ON PHONES & STACK
+       ============================================================ */
+    .fullscreen-btn {
+        display: flex;
+        width: 2.375rem; /* Match width of the 12/24 toggle including its padding */
+        height: 2.375rem;
+        border-radius: 10px;
+    }
+
+    .bottom-right-controls {
+        position: fixed;
+        bottom: 5rem;
+        right: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 10;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
+    }
+
+    .clock-format-toggle {
+        flex-direction: column;
+        border-radius: 10px;
+        padding: 3px;
+    }
+
+    .format-label {
+        width: 2rem;
+        height: 1.8rem;
+        font-size: 0.75rem;
+        border-radius: 7px;
+    }
+
+    .format-slider {
+        width: 2rem;
+        height: 1.8rem;
+        top: 3px;
+        left: 3px;
+        border-radius: 7px;
+        /* Override horizontal slide — use vertical on mobile */
+        transform: translateY(0%);
+    }
+
+    .format-slider.right {
+        transform: translateY(100%);
+    }
+
+    /* ============================================================
+       PANEL OVERLAY — dim backdrop behind open panels
+       ============================================================ */
+    body.panel-open::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 15;
+        opacity: 1;
+        animation: overlayFadeIn 0.25s ease;
+        pointer-events: auto;
+    }
+
+    @keyframes overlayFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* ============================================================
+       BOTTOM-SHEET PANELS
+       ============================================================ */
     .panel {
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        border-radius: 1.2rem 1.2rem 0 0 !important;
+        border-radius: 1.4rem 1.4rem 0 0 !important;
         transform: translateY(100%) !important;
         min-width: unset;
         max-width: unset;
-        padding: 1.2rem 1rem !important;
-        padding-top: 0.6rem !important;
-        padding-bottom: calc(1.2rem + env(safe-area-inset-bottom)) !important;
-        max-height: 70vh;
-        max-height: 70dvh;
+        padding: 1.2rem 1.2rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: calc(1.4rem + env(safe-area-inset-bottom)) !important;
+        max-height: 75vh;
+        max-height: 75dvh;
         overflow-y: auto;
+        z-index: 25;
+        transition: transform 0.35s cubic-bezier(.4,0,.2,1), opacity 0.3s ease,
+                    background var(--transition-theme), border-color var(--transition-theme);
+        will-change: transform;
     }
 
-    /* Drag handle affordance on bottom-sheet panels */
+    /* Drag handle — visual swipe affordance */
     .panel::before {
         content: '';
         display: block;
-        width: 36px;
+        width: 40px;
         height: 4px;
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.3);
         border-radius: 2px;
-        margin: 0 auto 0.8rem;
+        margin: 0.2rem auto 1rem;
         flex-shrink: 0;
     }
 
     .panel.visible {
         transform: translateY(0) !important;
+    }
+
+    /* Panel being swiped — disable normal transition */
+    .panel.swiping {
+        transition: none !important;
     }
 
     /* Music panel specific tweaks */
@@ -1625,13 +1908,13 @@ body[data-theme="evening"] .bg-evening {
     }
 
     .ost-ctrl-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
     }
 
     .ost-play-btn {
-        width: 48px;
-        height: 48px;
+        width: 52px;
+        height: 52px;
     }
 
     .ost-tracklist.open {
@@ -1639,7 +1922,7 @@ body[data-theme="evening"] .bg-evening {
     }
 
     .ost-tracklist-item {
-        padding: 0.5rem;
+        padding: 0.55rem 0.5rem;
     }
 
     /* Pomodoro panel tweaks */
@@ -1653,44 +1936,41 @@ body[data-theme="evening"] .bg-evening {
     }
 
     .timer-btn {
-        padding: 0.5rem 1.2rem;
-        font-size: 0.7rem;
+        padding: 0.55rem 1.4rem;
+        font-size: 0.72rem;
+        min-height: 38px;
     }
 
     .pomo-preset {
-        padding: 0.35rem 0.7rem;
-        font-size: 0.65rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.66rem;
+        min-height: 32px;
     }
 
-    /* Bottom-right controls — stack above toolbar to avoid overlap */
-    .bottom-right-controls {
-        bottom: 4.2rem;
-        right: 0.6rem;
-        gap: 0.35rem;
-        flex-direction: column;
-    }
-
-    /* Hide toolbar & bottom controls when a panel is open */
+    /* ============================================================
+       HIDE TOOLBAR + CONTROLS WHEN PANEL IS OPEN
+       ============================================================ */
     body.panel-open .toolbar {
         transform: translateX(-50%) translateY(calc(100% + 1rem));
         opacity: 0;
         pointer-events: none;
-        transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
     body.panel-open .bottom-right-controls {
+        transform: translateY(calc(100% + 1rem));
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.3s ease;
     }
 
-    /* Clock positions adjusted for phones */
+    /* ============================================================
+       CLOCK POSITIONS — phones
+       ============================================================ */
     .dashboard[data-clock-pos="top"] {
         padding-top: 4rem;
     }
 
     .dashboard[data-clock-pos="bottom-left"] {
-        padding: 0 0 5rem 1rem;
+        padding: 0 0 5.5rem 1rem;
     }
 
     .dashboard[data-clock-pos="bottom-left"] .clock-time {

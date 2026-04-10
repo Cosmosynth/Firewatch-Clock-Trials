@@ -88,9 +88,9 @@ format12.addEventListener('click', () => setClockFormat(false));
 format24.addEventListener('click', () => setClockFormat(true));
 
 /* =============================================================
-   THEME TOGGLE (sunset → night → evening → sunset)
+   THEME TOGGLE
    ============================================================= */
-const THEMES = ['sunset', 'night', 'evening'];
+const THEMES = ['sunset', 'night', 'evening', 'abstract-mountains', 'black-sunset', 'campo-santo', 'forest-green', 'forest-night', 'pencil', 'cabin-view', 'lakeside-sunrise', 'lakeside-sunset', 'minimal-sunrise', 'valley', 'boat-sea-red'];
 let themeIndex = 0;
 
 document.getElementById('btn-theme').addEventListener('click', () => {
