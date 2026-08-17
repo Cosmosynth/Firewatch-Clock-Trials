@@ -874,6 +874,7 @@ const LOFI_STATIONS = [
     { title: "SomaFM | Vaporwaves", file: "https://ice1.somafm.com/vaporwaves-128-aac" },
     { title: "SomaFM | Synphaera", file: "https://ice1.somafm.com/synphaera-128-aac" },
     { title: "Intense Radio | Chillout (Lossless OGG)", file: "http://secure.live-streams.nl/flac.ogg" },
+    { title: "Exclusively Pink Floyd", file: "https://streaming.exclusive.radio/er/pinkfloyd/icecast.audio" },
     { title: "Radio Paradise | Mellow Mix (FLAC Lossless)", file: "http://stream.radioparadise.com/mellow-flac" }
 ];
 
