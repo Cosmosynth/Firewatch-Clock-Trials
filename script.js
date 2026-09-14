@@ -857,6 +857,7 @@ volumeSlider.addEventListener('input', () => {
 const LOFI_STATIONS = [
     { title: "Lofi Girl (Community Relay)", file: "https://play.streamafrica.net/lofiradio" },
     { title: "Laut.FM | Lofi 24/7", file: "https://lofi.stream.laut.fm/lofi" },
+    { title: "Dr Dick's Dub Shack", file: "https://streamer.radio.co/s0635c8b0d/listen" },
     { title: "Zeno FM | Study Lofi", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
     { title: "Zeno FM | Chill Beats", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
     { title: "Zeno FM | Lofi Hip Hop", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
