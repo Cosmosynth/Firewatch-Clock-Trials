@@ -1,3 +1,5 @@
+
+
 ![wp10531693-firewatch-4k-wallpapers](https://github.com/user-attachments/assets/e915c6b7-2a9a-4d10-8f37-f69fd8a21635)
 ## Overview
 
@@ -12,6 +14,7 @@ $$ \lim_{\text{distractions} \to 0} \left( \text{Productivity} \right) = \infty 
 - **🍅 Enhanced Pomodoro Timer**: Fully customizable focus, short break, and long break intervals with sound notifications.
 - **🎵 Firewatch OST & Lofi Audio Player**: Seamlessly switch between the game's original soundtrack and a persistent Lofi radio stream. Complete with track management, progress bar, spacebar play/pause toggles, and volume controls.
 - **🕰️ Draggable Clock & UI**: Tweak and position your timeline where it best suits your workflow.
+- **📲 Standalone PWA**: App-like standalone display supported by `manifest.json`.
 
 ## Built With
 
