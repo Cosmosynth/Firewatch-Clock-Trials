@@ -408,9 +408,10 @@ document.getElementById('btn-ranger').addEventListener('click', () => togglePane
 
 /* --- Close panels on tap outside / tap overlay --- */
 document.addEventListener('click', (e) => {
-    // Don't close if the click was inside a panel, toolbar, or bottom-right controls
+    // Keep panels open while using settings, the toolbar, or bottom-right controls.
     if (e.target.closest('.panel') || e.target.closest('.toolbar-btn') ||
-        e.target.closest('.toolbar') || e.target.closest('.bottom-right-controls')) return;
+        e.target.closest('.toolbar') || e.target.closest('.bottom-right-controls') ||
+        e.target.closest('.settings-area') || e.target.closest('.info-overlay')) return;
     closeAllPanels();
 });
 
@@ -1805,6 +1806,70 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 animateParticles();
+
+/* =============================================================
+   ABOUT / ATTRIBUTION MODAL
+   ============================================================= */
+const infoOverlay = document.getElementById('info-overlay');
+const infoCloseBtn = document.getElementById('info-close');
+const infoYearEl = document.getElementById('info-year');
+const infoButton = document.getElementById('btn-info');
+let lastFocusedBeforeInfo = null;
+
+if (infoYearEl) {
+    infoYearEl.textContent = `\u00a9 ${new Date().getFullYear()}`;
+}
+
+function openInfo() {
+    if (!infoOverlay) return;
+    lastFocusedBeforeInfo = document.activeElement;
+    closeAllPanels();
+    infoOverlay.classList.add('open');
+    infoOverlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('info-open');
+    window.setTimeout(() => infoCloseBtn.focus(), 0);
+}
+
+function closeInfo() {
+    if (!infoOverlay || !infoOverlay.classList.contains('open')) return;
+    infoOverlay.classList.remove('open');
+    infoOverlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('info-open');
+    const focusTarget = lastFocusedBeforeInfo && lastFocusedBeforeInfo !== document.body
+        ? lastFocusedBeforeInfo
+        : infoButton;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+        focusTarget.focus();
+    }
+}
+
+if (infoButton) infoButton.addEventListener('click', openInfo);
+if (infoCloseBtn) infoCloseBtn.addEventListener('click', closeInfo);
+
+if (infoOverlay) {
+    infoOverlay.addEventListener('click', (e) => {
+        if (e.target === infoOverlay) closeInfo();
+    });
+
+    // Keep keyboard focus inside the dialog while it is open.
+    infoOverlay.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        const focusable = infoOverlay.querySelectorAll(
+            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+}
 
 /* =============================================================
    KEYBOARD SHORTCUTS (bonus feature)

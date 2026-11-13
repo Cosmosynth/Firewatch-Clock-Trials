@@ -249,6 +249,16 @@
 
         <!-- Settings — top-right -->
         <div class="settings-area">
+            <button class="settings-btn" id="btn-info" aria-label="About this project" aria-haspopup="dialog"
+                title="About this project">
+                <svg viewBox="0 0 24 24">
+                    <title>About This Project</title>
+                    <circle cx="12" cy="12" r="9" />
+                    <line x1="12" y1="11" x2="12" y2="16" />
+                    <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none" />
+                </svg>
+                <span>Info</span>
+            </button>
             <button class="settings-btn" id="btn-clock-pos" aria-label="Move clock">
                 <svg viewBox="0 0 24 24">
                     <title>Move Clock Position</title>
@@ -568,6 +578,79 @@
         </div>
 
     </main>
+
+    <!-- ====== ABOUT / ATTRIBUTION MODAL ====== -->
+    <div class="info-overlay" id="info-overlay" aria-hidden="true">
+        <div class="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title"
+            aria-describedby="info-summary">
+            <button class="info-close" id="info-close" type="button" aria-label="Close about dialog">&times;</button>
+            <p class="info-eyebrow">About</p>
+            <h2 class="info-title" id="info-title">Firewatch Dashboard</h2>
+            <p class="info-summary" id="info-summary">
+                A quiet, fan-made focus dashboard inspired by Firewatch. Unofficial and non-commercial.
+            </p>
+
+            <div class="info-links">
+                <a href="https://github.com/Cosmosynth/Firewatch-Clock-Trials" target="_blank"
+                    rel="noopener noreferrer">GitHub repository</a>
+                <a href="https://github.com/Cosmosynth/Firewatch-Clock-Trials/issues" target="_blank"
+                    rel="noopener noreferrer">Report an issue</a>
+            </div>
+
+            <h3>A fan project</h3>
+            <p>
+                Made by Hasya (u/Wizard_1512) as a tribute to Firewatch. This project is not affiliated with,
+                endorsed by, or sponsored by Campo Santo or Valve. Firewatch, its artwork, characters, and related
+                trademarks belong to their respective owners.
+            </p>
+
+            <h3>Music and rights</h3>
+            <p>
+                The Firewatch original soundtrack was composed and produced by <strong>Chris Remo</strong>. All
+                rights remain with
+                the composer and the rights holders. The end-credits recording
+                <em>"I'd Rather Go Blind"</em> is performed by <strong>Etta James</strong>, written by
+                <strong>Ellington Jordan and Billy Foster</strong>, and remains the property of its rights holders.
+            </p>
+            <p>
+                Lofi and radio stations are streamed from third-party providers. All rights belong to those
+                providers, their artists, and their licensors. This project does not host those streams.
+            </p>
+
+            <h3>Privacy</h3>
+            <p>
+                Your settings, timer state, clock position, and Ranger Log are stored only in this browser using
+                local storage. There are no accounts and no personal data is sold. The hosted site uses Vercel's
+                aggregate page-view analytics.
+            </p>
+
+            <h3>Keyboard shortcuts</h3>
+            <p>Shortcuts work when you are not typing in a field.</p>
+            <div class="info-shortcuts">
+                <div class="info-shortcut"><kbd>T</kbd><span>Cycle theme</span></div>
+                <div class="info-shortcut"><kbd>M</kbd><span>Move clock</span></div>
+                <div class="info-shortcut"><kbd>P</kbd><span>Pomodoro</span></div>
+                <div class="info-shortcut"><kbd>S</kbd><span>Stopwatch</span></div>
+                <div class="info-shortcut"><kbd>R</kbd><span>Ranger Log</span></div>
+                <div class="info-shortcut"><kbd>O</kbd><span>Music player</span></div>
+                <div class="info-shortcut"><kbd>I</kbd><span>About dialog</span></div>
+                <div class="info-shortcut"><kbd>F</kbd><span>Fullscreen</span></div>
+                <div class="info-shortcut"><kbd>Space</kbd><span>Play or pause audio</span></div>
+                <div class="info-shortcut"><kbd>Esc</kbd><span>Close panel or dialog</span></div>
+            </div>
+
+            <p class="info-note">
+                This project is a non-commercial tribute. It has no ads, no subscriptions, and generates no revenue.
+                If you are a rights holder and would like content removed, open an issue on GitHub and it will be
+                handled promptly.
+            </p>
+
+            <div class="info-footer">
+                <span>Fan-made. No ads. No revenue.</span>
+                <span id="info-year"></span>
+            </div>
+        </div>
+    </div>
 
     <!-- ====== SEO CONTENT — visually hidden, search-engine visible ====== -->
     <section class="seo-content" aria-hidden="true">
