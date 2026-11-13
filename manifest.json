@@ -1,8 +1,10 @@
 {
+    "id": "/",
     "name": "Firewatch Dashboard — Study Pomodoro & Clock",
     "short_name": "Firewatch",
-    "description": "The only Firewatch-inspired study dashboard with a study pomodoro, study clock, study timer, and official OST.",
-    "start_url": "/",
+    "description": "A fan-made Firewatch-inspired study dashboard with a clock, Pomodoro timer, stopwatch, Ranger Log, and the original soundtrack.",
+    "start_url": "./",
+    "scope": "./",
     "display": "standalone",
     "background_color": "#1a1a2e",
     "theme_color": "#E8734A",
@@ -10,10 +12,22 @@
     "categories": ["productivity", "education", "utilities"],
     "icons": [
         {
+            "src": "icon/firewatch_icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
             "src": "icon/firewatch_icon.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "icon/firewatch_icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ],
     "screenshots": [
