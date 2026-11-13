@@ -781,6 +781,44 @@ html[data-clock-format="24"] .clock-ampm {
     transition: background var(--transition-theme), border-color var(--transition-theme);
 }
 
+.running-timers {
+    position: absolute;
+    bottom: calc(100% + 0.55rem);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.9rem;
+    width: max-content;
+    max-width: min(90vw, 36rem);
+    pointer-events: none;
+    font-family: var(--font-body);
+    font-size: 0.64rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+    white-space: nowrap;
+}
+
+.running-timer {
+    display: inline-flex;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.running-timer[hidden] {
+    display: none;
+}
+
+body.panel-open .running-timers {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .toolbar-btn {
     display: flex;
     align-items: center;
@@ -2037,6 +2075,14 @@ html[data-clock-format="24"] .clock-ampm {
     .toolbar-divider {
         height: 1.4rem;
         margin: 0 0.1rem;
+    }
+
+    .running-timers {
+        bottom: calc(100% + 0.45rem);
+        gap: 0.2rem 0.65rem;
+        max-width: 92vw;
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
     }
 
     /* ============================================================

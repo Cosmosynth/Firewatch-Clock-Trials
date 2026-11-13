@@ -38,6 +38,7 @@ This is an unofficial tribute. It is not affiliated with Campo Santo or Valve, a
 | **Clock** | Live time, full date, 12/24-hour format, three preset positions, and free dragging with double-click reset. |
 | **Pomodoro** | Timestamp-based focus and break sessions that stay accurate in background tabs. Custom lengths, four-session cycle, long breaks, and an optional chime. |
 | **Stopwatch** | Millisecond precision with lap history. |
+| **Home status** | Running Pomodoro and stopwatch times stay visible above the toolbar. |
 | **Ranger Log** | A persistent checklist for the day. Add, complete, delete, and clear finished tasks. Nothing resets automatically. |
 | **Music** | The Firewatch OST with track list, shuffle, repeat, seek, and volume. A separate Lofi Radio mode streams third-party stations over HTTPS. |
 | **Themes** | Fifteen Firewatch-inspired backgrounds, from sunset to pencil sketch. |

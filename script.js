@@ -692,6 +692,7 @@ const pomoRing = document.getElementById('pomo-ring-fill');
 const pomoStartBtn = document.getElementById('pomo-start');
 const pomoResetBtn = document.getElementById('pomo-reset');
 const pomoApplyBtn = document.getElementById('pomo-apply-custom');
+const runningPomoEl = document.getElementById('running-pomodoro');
 const pomoCircumference = 2 * Math.PI * 42;
 const POMO_TICK_MS = 250;
 
@@ -917,6 +918,20 @@ pomoApplyBtn.addEventListener('click', () => {
 });
 
 /* --- Display update --- */
+function updatePomoHomeDisplay() {
+    if (!runningPomoEl) return;
+    const active = pomoRunning || (pomoTime > 0 && pomoTime < totalForPhase());
+    runningPomoEl.hidden = !active;
+    if (!active) return;
+
+    const m = Math.floor(Math.max(0, pomoTime) / 60);
+    const s = Math.max(0, pomoTime) % 60;
+    const text = `Pomodoro ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    if (runningPomoEl.textContent !== text) {
+        runningPomoEl.textContent = text;
+    }
+}
+
 function updatePomoDisplay() {
     const m = Math.floor(Math.max(0, pomoTime) / 60);
     const s = Math.max(0, pomoTime) % 60;
@@ -925,6 +940,7 @@ function updatePomoDisplay() {
     const total = totalForPhase();
     const progress = total > 0 ? 1 - (pomoTime / total) : 0;
     pomoRing.style.strokeDashoffset = pomoCircumference * (1 - Math.max(0, Math.min(1, progress)));
+    updatePomoHomeDisplay();
 }
 
 function updatePomoDots() {
@@ -996,6 +1012,7 @@ function startPomo() {
     startPomoTicker();
     syncPomoStartButton();
     syncPomoControlsDisabled();
+    updatePomoHomeDisplay();
     persistPomoState();
 }
 
@@ -1098,6 +1115,7 @@ let swInterval = null;
 let swLaps = [];
 const swDisplay = document.getElementById('sw-display');
 const swLapsList = document.getElementById('sw-laps');
+const runningSwEl = document.getElementById('running-stopwatch');
 
 function formatSW(ms) {
     const totalSec = Math.floor(ms / 1000);
@@ -1107,8 +1125,29 @@ function formatSW(ms) {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}<span style="font-size:1.4rem;opacity:0.5">.${String(cs).padStart(2, '0')}</span>`;
 }
 
+function formatSWText(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
 function updateSWDisplay() {
     swDisplay.innerHTML = formatSW(swTime);
+}
+
+function updateSwHomeDisplay(force = false) {
+    if (!runningSwEl) return;
+    const active = swRunning || swTime > 0;
+    runningSwEl.hidden = !active;
+    if (!active) return;
+
+    const text = `Stopwatch ${formatSWText(swTime)}`;
+    if (force || runningSwEl.textContent !== text) {
+        runningSwEl.textContent = text;
+    }
 }
 
 document.getElementById('sw-start').addEventListener('click', function () {
@@ -1116,6 +1155,7 @@ document.getElementById('sw-start').addEventListener('click', function () {
         clearInterval(swInterval);
         swRunning = false;
         this.textContent = 'Resume';
+        updateSwHomeDisplay(true);
     } else {
         swRunning = true;
         this.textContent = 'Pause';
@@ -1123,7 +1163,9 @@ document.getElementById('sw-start').addEventListener('click', function () {
         swInterval = setInterval(() => {
             swTime = Date.now() - startAt;
             updateSWDisplay();
+            updateSwHomeDisplay();
         }, 30);
+        updateSwHomeDisplay(true);
     }
 });
 
@@ -1146,6 +1188,7 @@ document.getElementById('sw-reset').addEventListener('click', () => {
     swLapsList.innerHTML = '';
     document.getElementById('sw-start').textContent = 'Start';
     updateSWDisplay();
+    updateSwHomeDisplay(true);
 });
 
 /* =============================================================
