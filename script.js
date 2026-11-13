@@ -2005,3 +2005,19 @@ document.addEventListener('fullscreenchange', updateFullscreenIcon);
 document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
 document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
 document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
+
+/* =============================================================
+   BOOT — apply saved state after every module is ready
+   ============================================================= */
+setClockFormat(use24h, { persist: false, animate: false });
+updateThemeColor();
+
+if (typeof window.__restoreClockPosition === 'function') {
+    window.__restoreClockPosition();
+}
+
+restorePomodoro();
+applyVolume(fwSettings.volume);
+loadTrack(ostCurrentIndex);
+loadLofiStation(lofiCurrentIndex);
+setMusicMode(fwSettings.musicMode === 'lofi' ? 'lofi' : 'ost', false);
