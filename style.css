@@ -1146,6 +1146,13 @@ html[data-clock-format="24"] .clock-ampm {
     transform: translateY(-1px);
 }
 
+.pomo-preset:disabled,
+.pomo-apply-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* ================================================================
    MUSIC PLAYER — Firewatch OST
    ================================================================ */
