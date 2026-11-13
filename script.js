@@ -1,5 +1,62 @@
 
 /* =============================================================
+   LOCAL STORAGE — SETTINGS
+   ============================================================= */
+const SETTINGS_KEY = 'fw.settings.v1';
+const POMO_KEY = 'fw.pomodoro.v1';
+const RANGER_KEY = 'fw.rangerlog.v1';
+
+const DEFAULT_SETTINGS = {
+    theme: 'sunset',
+    clockPos: 'center',
+    clockXY: null,
+    use24h: false,
+    volume: 60,
+    pomoSoundOn: true,
+    pomo: { focus: 25, short: 5, long: 15 },
+    musicMode: 'ost',
+    ostIndex: 0,
+    lofiIndex: 0
+};
+
+function readJSON(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (error) {
+        return fallback;
+    }
+}
+
+function writeJSON(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        /* Storage can be unavailable or full; the app still works in memory. */
+    }
+}
+
+const rawSettings = readJSON(SETTINGS_KEY, {});
+const savedSettings = rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)
+    ? rawSettings
+    : {};
+const savedPomo = savedSettings.pomo && typeof savedSettings.pomo === 'object' ? savedSettings.pomo : {};
+const fwSettings = {
+    ...DEFAULT_SETTINGS,
+    ...savedSettings,
+    pomo: { ...DEFAULT_SETTINGS.pomo, ...savedPomo },
+    clockXY: savedSettings.clockXY || null
+};
+
+function saveSettings(patch) {
+    Object.assign(fwSettings, patch);
+    writeJSON(SETTINGS_KEY, fwSettings);
+}
+
+/* Cached theme color for the particle canvas (avoids getComputedStyle per frame). */
+let particleColor = 'rgba(255, 180, 100, 0.6)';
+
+/* =============================================================
    WELCOME SCREEN
    ============================================================= */
 const welcomeOverlay = document.getElementById('welcome-overlay');
@@ -91,11 +148,32 @@ format24.addEventListener('click', () => setClockFormat(true));
    THEME TOGGLE
    ============================================================= */
 const THEMES = ['sunset', 'night', 'evening', 'abstract-mountains', 'black-sunset', 'campo-santo', 'forest-green', 'forest-night', 'pencil', 'cabin-view', 'lakeside-sunrise', 'lakeside-sunset', 'minimal-sunrise', 'valley', 'boat-sea-red'];
-let themeIndex = 0;
+let themeIndex = Math.max(0, THEMES.indexOf(fwSettings.theme));
+
+function updateThemeColor() {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    if (accent) meta.setAttribute('content', accent);
+}
+
+function applyTheme(theme) {
+    const index = THEMES.indexOf(theme);
+    themeIndex = index === -1 ? 0 : index;
+    document.documentElement.setAttribute('data-theme', THEMES[themeIndex]);
+    updateThemeColor();
+    refreshParticleColor();
+    if (typeof window.__fwRedrawParticles === 'function') {
+        window.__fwRedrawParticles();
+    }
+}
+
+applyTheme(THEMES[themeIndex]);
 
 document.getElementById('btn-theme').addEventListener('click', () => {
     themeIndex = (themeIndex + 1) % THEMES.length;
-    document.body.setAttribute('data-theme', THEMES[themeIndex]);
+    applyTheme(THEMES[themeIndex]);
+    saveSettings({ theme: THEMES[themeIndex] });
 });
 
 /* =============================================================
@@ -1047,6 +1125,15 @@ ostPlayBtn.addEventListener('click', () => {
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
+const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+let reduceMotion = reduceMotionQuery.matches;
+
+function refreshParticleColor() {
+    const color = getComputedStyle(document.documentElement)
+        .getPropertyValue('--particle-color')
+        .trim();
+    if (color) particleColor = color;
+}
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;

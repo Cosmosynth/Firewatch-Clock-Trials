@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="sunset" data-clock-format="12">
 
 <head>
     <meta charset="UTF-8" />
@@ -23,6 +23,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
+
+    <!-- ====== APPLY SAVED VISUAL PREFERENCES BEFORE FIRST PAINT ====== -->
+    <script>
+        (function () {
+            try {
+                var raw = localStorage.getItem('fw.settings.v1');
+                var settings = raw ? JSON.parse(raw) : {};
+                if (settings.theme) {
+                    document.documentElement.setAttribute('data-theme', settings.theme);
+                }
+                document.documentElement.setAttribute(
+                    'data-clock-format',
+                    settings.use24h ? '24' : '12'
+                );
+                if (sessionStorage.getItem('fw-visited') === '1') {
+                    document.documentElement.classList.add('fw-visited');
+                }
+            } catch (error) {
+                /* Storage can be unavailable in private browsing. */
+            }
+        })();
+    </script>
 
     <!-- ====== CANONICAL URL (update to your real domain) ====== -->
     <link rel="canonical" href="https://firewatch-outpost.vercel.app/" />
@@ -154,7 +176,7 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 
-<body data-theme="sunset" itemscope itemtype="https://schema.org/WebApplication">
+<body itemscope itemtype="https://schema.org/WebApplication">
 
     <!-- Background Layers -->
     <div class="bg-layer bg-sunset"></div>

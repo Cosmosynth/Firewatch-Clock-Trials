@@ -9,7 +9,7 @@
 }
 
 /* ---------- SUNSET ---------- */
-body[data-theme="sunset"] {
+html[data-theme="sunset"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -23,7 +23,7 @@ body[data-theme="sunset"] {
 }
 
 /* ---------- NIGHT ---------- */
-body[data-theme="night"] {
+html[data-theme="night"] {
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.6);
     --date-color: #8fb8d4;
@@ -37,7 +37,7 @@ body[data-theme="night"] {
 }
 
 /* ---------- EVENING ---------- */
-body[data-theme="evening"] {
+html[data-theme="evening"] {
     --text-primary: #e8d5f5;
     --text-secondary: rgba(232, 213, 245, 0.65);
     --date-color: #b89cc8;
@@ -51,7 +51,7 @@ body[data-theme="evening"] {
 }
 
 /* ---------- ABSTRACT MOUNTAINS ---------- */
-body[data-theme="abstract-mountains"] {
+html[data-theme="abstract-mountains"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -65,7 +65,7 @@ body[data-theme="abstract-mountains"] {
 }
 
 /* ---------- BLACK SUNSET ---------- */
-body[data-theme="black-sunset"] {
+html[data-theme="black-sunset"] {
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.6);
     --date-color: #d8c8b8;
@@ -79,7 +79,7 @@ body[data-theme="black-sunset"] {
 }
 
 /* ---------- CAMPO SANTO ---------- */
-body[data-theme="campo-santo"] {
+html[data-theme="campo-santo"] {
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --date-color: #ffe8b3;
@@ -93,7 +93,7 @@ body[data-theme="campo-santo"] {
 }
 
 /* ---------- FOREST GREEN ---------- */
-body[data-theme="forest-green"] {
+html[data-theme="forest-green"] {
     --text-primary: #e0f8e0;
     --text-secondary: rgba(224, 248, 224, 0.65);
     --date-color: #a3d9b8;
@@ -107,7 +107,7 @@ body[data-theme="forest-green"] {
 }
 
 /* ---------- FOREST NIGHT ---------- */
-body[data-theme="forest-night"] {
+html[data-theme="forest-night"] {
     --text-primary: #e0e0f8;
     --text-secondary: rgba(224, 224, 248, 0.65);
     --date-color: #b3cce6;
@@ -121,7 +121,7 @@ body[data-theme="forest-night"] {
 }
 
 /* ---------- PENCIL ---------- */
-body[data-theme="pencil"] {
+html[data-theme="pencil"] {
     --text-primary: #e0e0e0;
     --text-secondary: rgba(224, 224, 224, 0.65);
     --date-color: #a0a0a0;
@@ -135,7 +135,7 @@ body[data-theme="pencil"] {
 }
 
 /* ---------- CABIN VIEW ---------- */
-body[data-theme="cabin-view"] {
+html[data-theme="cabin-view"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -149,7 +149,7 @@ body[data-theme="cabin-view"] {
 }
 
 /* ---------- LAKESIDE SUNRISE ---------- */
-body[data-theme="lakeside-sunrise"] {
+html[data-theme="lakeside-sunrise"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -163,7 +163,7 @@ body[data-theme="lakeside-sunrise"] {
 }
 
 /* ---------- LAKESIDE SUNSET ---------- */
-body[data-theme="lakeside-sunset"] {
+html[data-theme="lakeside-sunset"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -177,7 +177,7 @@ body[data-theme="lakeside-sunset"] {
 }
 
 /* ---------- MINIMAL SUNRISE ---------- */
-body[data-theme="minimal-sunrise"] {
+html[data-theme="minimal-sunrise"] {
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --date-color: #e6ccff;
@@ -191,7 +191,7 @@ body[data-theme="minimal-sunrise"] {
 }
 
 /* ---------- VALLEY ---------- */
-body[data-theme="valley"] {
+html[data-theme="valley"] {
     --text-primary: #e8d5f5;
     --text-secondary: rgba(232, 213, 245, 0.65);
     --date-color: #b89cc8;
@@ -205,7 +205,7 @@ body[data-theme="valley"] {
 }
 
 /* ---------- BOAT SEA RED ---------- */
-body[data-theme="boat-sea-red"] {
+html[data-theme="boat-sea-red"] {
     --text-primary: #fde8d0;
     --text-secondary: rgba(253, 232, 208, 0.7);
     --date-color: #d4a574;
@@ -221,6 +221,13 @@ body[data-theme="boat-sea-red"] {
 /* ================================================================
    BACKGROUND LAYERS — 3-layer crossfade
    ================================================================ */
+html {
+    background-color: #101820;
+}
+
+/* Keep the body transparent: the fixed wallpaper layers use negative z-index,
+   so an opaque body background would paint over them. */
+
 body {
     margin: 0;
     padding: 0;
@@ -259,15 +266,15 @@ body {
     background-image: url('wallpapers/evening-bg.png');
 }
 
-body[data-theme="sunset"] .bg-sunset {
+html[data-theme="sunset"] .bg-sunset {
     opacity: 1;
 }
 
-body[data-theme="night"] .bg-night {
+html[data-theme="night"] .bg-night {
     opacity: 1;
 }
 
-body[data-theme="evening"] .bg-evening {
+html[data-theme="evening"] .bg-evening {
     opacity: 1;
 }
 
@@ -284,18 +291,18 @@ body[data-theme="evening"] .bg-evening {
 .bg-valley { background-image: url('wallpapers/Valley.png'); }
 .bg-boat-sea-red { background-image: url('wallpapers/boat-sea-red.jpg'); }
 
-body[data-theme="abstract-mountains"] .bg-abstract-mountains,
-body[data-theme="black-sunset"] .bg-black-sunset,
-body[data-theme="campo-santo"] .bg-campo-santo,
-body[data-theme="forest-green"] .bg-forest-green,
-body[data-theme="forest-night"] .bg-forest-night,
-body[data-theme="pencil"] .bg-pencil,
-body[data-theme="cabin-view"] .bg-cabin-view,
-body[data-theme="lakeside-sunrise"] .bg-lakeside-sunrise,
-body[data-theme="lakeside-sunset"] .bg-lakeside-sunset,
-body[data-theme="minimal-sunrise"] .bg-minimal-sunrise,
-body[data-theme="valley"] .bg-valley,
-body[data-theme="boat-sea-red"] .bg-boat-sea-red {
+html[data-theme="abstract-mountains"] .bg-abstract-mountains,
+html[data-theme="black-sunset"] .bg-black-sunset,
+html[data-theme="campo-santo"] .bg-campo-santo,
+html[data-theme="forest-green"] .bg-forest-green,
+html[data-theme="forest-night"] .bg-forest-night,
+html[data-theme="pencil"] .bg-pencil,
+html[data-theme="cabin-view"] .bg-cabin-view,
+html[data-theme="lakeside-sunrise"] .bg-lakeside-sunrise,
+html[data-theme="lakeside-sunset"] .bg-lakeside-sunset,
+html[data-theme="minimal-sunrise"] .bg-minimal-sunrise,
+html[data-theme="valley"] .bg-valley,
+html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     opacity: 1;
 }
 
