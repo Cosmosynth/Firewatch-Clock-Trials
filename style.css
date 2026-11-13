@@ -583,6 +583,14 @@ html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     display: none;
 }
 
+.music-panel.lofi-mode .ost-only-control {
+    display: none;
+}
+
+.music-panel.lofi-mode .ost-controls {
+    justify-content: center;
+}
+
 .music-panel.lofi-mode .lofi-tracklist {
     display: block;
     /* Overrides the default display:none */
@@ -1271,6 +1279,7 @@ html[data-clock-format="24"] .clock-ampm {
     border-radius: 2px;
     cursor: pointer;
     overflow: visible;
+    touch-action: none;
 }
 
 .ost-progress-fill {

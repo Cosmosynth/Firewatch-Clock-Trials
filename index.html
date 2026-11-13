@@ -475,7 +475,8 @@
             <!-- Progress bar -->
             <div class="ost-progress-wrap">
                 <span class="ost-time" id="ost-time-current">0:00</span>
-                <div class="ost-progress-bar" id="ost-progress-bar">
+                <div class="ost-progress-bar" id="ost-progress-bar" role="slider" tabindex="0"
+                    aria-label="Track progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                     <div class="ost-progress-fill" id="ost-progress-fill"></div>
                     <div class="ost-progress-thumb" id="ost-progress-thumb"></div>
                 </div>
@@ -484,7 +485,7 @@
 
             <!-- Main controls -->
             <div class="ost-controls">
-                <button class="ost-ctrl-btn" id="ost-shuffle" aria-label="Shuffle" title="Shuffle">
+                <button class="ost-ctrl-btn ost-only-control" id="ost-shuffle" aria-label="Shuffle" title="Shuffle">
                     <svg viewBox="0 0 24 24">
                         <polyline points="16 3 21 3 21 8" />
                         <line x1="4" y1="20" x2="21" y2="3" />
@@ -510,7 +511,7 @@
                         <line x1="19" y1="5" x2="19" y2="19" />
                     </svg>
                 </button>
-                <button class="ost-ctrl-btn" id="ost-repeat" aria-label="Repeat" title="Repeat">
+                <button class="ost-ctrl-btn ost-only-control" id="ost-repeat" aria-label="Repeat" title="Repeat">
                     <svg viewBox="0 0 24 24">
                         <polyline points="17 1 21 5 17 9" />
                         <path d="M3 11V9a4 4 0 0 1 4-4h14" />

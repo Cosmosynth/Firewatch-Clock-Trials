@@ -1151,7 +1151,11 @@ const OST_TRACKS = [
 ];
 
 const ostAudio = new Audio();
-let ostCurrentIndex = 0;
+ostAudio.preload = 'none';
+let ostCurrentIndex = Math.min(
+    OST_TRACKS.length - 1,
+    Math.max(0, parseInt(fwSettings.ostIndex, 10) || 0)
+);
 let ostIsPlaying = false;
 let ostShuffleOn = false;
 let ostRepeatMode = 0; // 0 = off, 1 = all, 2 = one
@@ -1233,16 +1237,23 @@ function generateShuffleQueue() {
 
 // --- Load & Play ---
 function loadTrack(index) {
+    if (!Number.isFinite(index) || index < 0 || index >= OST_TRACKS.length) return;
     ostCurrentIndex = index;
     const track = OST_TRACKS[index];
     ostAudio.src = track.file;
     ostTrackName.textContent = track.title;
     ostTrackNumber.textContent = `${index + 1} / ${OST_TRACKS.length}`;
+    ostTimeCurrent.textContent = '0:00';
+    ostTimeTotal.textContent = '0:00';
+    ostProgressFill.style.width = '0%';
+    ostProgressThumb.style.left = '0%';
+    ostProgressBar.setAttribute('aria-valuenow', '0');
     highlightTracklistItem();
+    saveSettings({ ostIndex: index });
 
     // Sync top-left widget if in OST mode
     if (musicMode === 'ost') {
-        lofiStatusText.textContent = "Now Playing";
+        lofiStatusText.textContent = ostIsPlaying ? 'Now Playing' : 'Paused';
         updateTrackNameDisplay(track.title);
     }
 }
@@ -1289,7 +1300,7 @@ function nextTrack() {
         if (ostShufflePos >= ostShuffleQueue.length) {
             if (ostRepeatMode >= 1) {
                 generateShuffleQueue();
-                ostShufflePos = 0;
+                ostShufflePos = ostShuffleQueue.length > 1 ? 1 : 0;
             } else {
                 pauseTrack();
                 return;
@@ -1327,8 +1338,9 @@ function prevTrack() {
     }
     let prevIdx;
     if (ostShuffleOn) {
+        if (!ostShuffleQueue.length) generateShuffleQueue();
         ostShufflePos--;
-        if (ostShufflePos < 0) ostShufflePos = 0;
+        if (ostShufflePos < 0) ostShufflePos = ostShuffleQueue.length - 1;
         prevIdx = ostShuffleQueue[ostShufflePos];
     } else {
         prevIdx = ostCurrentIndex - 1;
@@ -1379,71 +1391,127 @@ ostAudio.addEventListener('timeupdate', () => {
     ostProgressFill.style.width = `${pct}%`;
     ostProgressThumb.style.left = `${pct}%`;
     ostTimeCurrent.textContent = formatTime(ostAudio.currentTime);
+    ostProgressBar.setAttribute('aria-valuenow', String(Math.round(pct)));
 });
 
 ostAudio.addEventListener('loadedmetadata', () => {
     ostTimeTotal.textContent = formatTime(ostAudio.duration);
 });
 
-// Seeking via progress bar
+// Seeking via progress bar — pointer events cover mouse, touch, and pen
 let ostSeeking = false;
-function seekFromEvent(e) {
+
+function seekFromPointer(e) {
     const rect = ostProgressBar.getBoundingClientRect();
     const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    if (ostAudio.duration) {
+    if (ostAudio.duration && Number.isFinite(ostAudio.duration)) {
         ostAudio.currentTime = pct * ostAudio.duration;
+        ostProgressFill.style.width = `${pct * 100}%`;
+        ostProgressThumb.style.left = `${pct * 100}%`;
+        ostTimeCurrent.textContent = formatTime(ostAudio.currentTime);
+        ostProgressBar.setAttribute('aria-valuenow', String(Math.round(pct * 100)));
     }
 }
-ostProgressBar.addEventListener('mousedown', (e) => {
-    ostSeeking = true;
-    seekFromEvent(e);
-});
-window.addEventListener('mousemove', (e) => { if (ostSeeking) seekFromEvent(e); });
-window.addEventListener('mouseup', () => { ostSeeking = false; });
 
-// Volume
-ostAudio.volume = parseInt(volumeSlider.value) / 100;
-volumeSlider.addEventListener('input', () => {
-    const vol = parseInt(volumeSlider.value) / 100;
-    ostAudio.volume = vol;
-    if (typeof lofiAudio !== 'undefined') {
-        lofiAudio.volume = vol;
+ostProgressBar.addEventListener('pointerdown', (e) => {
+    if (!ostAudio.duration || !Number.isFinite(ostAudio.duration)) return;
+    ostSeeking = true;
+    try {
+        ostProgressBar.setPointerCapture(e.pointerId);
+    } catch (error) {
+        /* Optional capture. */
     }
+    seekFromPointer(e);
+    e.preventDefault();
+});
+
+ostProgressBar.addEventListener('pointermove', (e) => {
+    if (ostSeeking) seekFromPointer(e);
+});
+
+function endSeek(e) {
+    if (!ostSeeking) return;
+    ostSeeking = false;
+    try {
+        ostProgressBar.releasePointerCapture(e.pointerId);
+    } catch (error) {
+        /* Already released. */
+    }
+}
+
+ostProgressBar.addEventListener('pointerup', endSeek);
+ostProgressBar.addEventListener('pointercancel', endSeek);
+
+ostProgressBar.addEventListener('keydown', (e) => {
+    if (!ostAudio.duration || !Number.isFinite(ostAudio.duration)) return;
+    const step = e.shiftKey ? 30 : 5;
+
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        ostAudio.currentTime = Math.max(0, ostAudio.currentTime - step);
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        ostAudio.currentTime = Math.min(ostAudio.duration, ostAudio.currentTime + step);
+    } else if (e.key === 'Home') {
+        e.preventDefault();
+        ostAudio.currentTime = 0;
+    } else if (e.key === 'End') {
+        e.preventDefault();
+        ostAudio.currentTime = ostAudio.duration;
+    }
+});
+
+// Volume — saved and shared by OST and radio
+function applyVolume(value, persist = false) {
+    const parsed = parseInt(value, 10);
+    const volume = Math.min(100, Math.max(0, Number.isFinite(parsed) ? parsed : 60));
+    volumeSlider.value = volume;
+    const normalized = volume / 100;
+    ostAudio.volume = normalized;
+    lofiAudio.volume = normalized;
+    volumeSlider.setAttribute('aria-valuenow', String(volume));
+    if (persist) saveSettings({ volume });
+}
+
+volumeSlider.addEventListener('input', () => {
+    applyVolume(volumeSlider.value, true);
 });
 
 /* =============================================================
    LOFI RADIO (Direct HTML5 Audio Stream)
    ============================================================= */
 const LOFI_STATIONS = [
-    { title: "Lofi Girl (Community Relay)", file: "https://play.streamafrica.net/lofiradio" },
-    { title: "Laut.FM | Lofi 24/7", file: "https://lofi.stream.laut.fm/lofi" },
-    { title: "Dr Dick's Dub Shack", file: "https://streamer.radio.co/s0635c8b0d/listen" },
-    { title: "Zeno FM | Study Lofi", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
-    { title: "Zeno FM | Chill Beats", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
-    { title: "Zeno FM | Lofi Hip Hop", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
-    { title: "Zeno FM | Box Lofi", file: "https://stream.zeno.fm/f3wvbbqmdg8uv" },
-    { title: "Zeno FM | The Bootleg Boy", file: "https://stream.zeno.fm/0r0xa792kwzuv" },
-    { title: "Fastcast4u | Chill Lofi", file: "http://usa9.fastcast4u.com/proxy/jamz?mp=/1" },
-    { title: "FluxFM | Chillhop", file: "https://channels.fluxfm.de/chillhop/externalembedflxhp/stream.mp3" },
-    { title: "Nightride FM | Chillsynth (Hi-Res AAC)", file: "https://stream.nightride.fm/chillsynth.m4a" },
-    { title: "SomaFM | Secret Agent", file: "https://ice1.somafm.com/secretagent-128-aac" },
-    { title: "SomaFM | Deep Space One (Deep Ambient)", file: "https://ice1.somafm.com/deepspaceone-128-aac" },
-    { title: "SomaFM | Groove Salad", file: "https://ice1.somafm.com/groovesalad-256-mp3" },
-    { title: "SomaFM | Drone Zone", file: "https://ice1.somafm.com/dronezone-256-mp3" },
-    { title: "SomaFM | DEF CON Radio", file: "https://ice1.somafm.com/defcon-128-aac" },
-    { title: "SomaFM | Space Station", file: "https://ice1.somafm.com/spacestation-128-aac" },
-    { title: "SomaFM | Vaporwaves", file: "https://ice1.somafm.com/vaporwaves-128-aac" },
-    { title: "SomaFM | Synphaera", file: "https://ice1.somafm.com/synphaera-128-aac" },
-    { title: "Intense Radio | Chillout (Lossless OGG)", file: "http://secure.live-streams.nl/flac.ogg" },
-    { title: "Exclusively Pink Floyd", file: "https://streaming.exclusive.radio/er/pinkfloyd/icecast.audio" },
-    { title: "Exclusively Pink Floyd | Hits", file: "https://streaming.exclusive.radio/er/pinkfloydhits/icecast.audio" },
-    { title: "Radio Paradise | Mellow Mix (FLAC Lossless)", file: "http://stream.radioparadise.com/mellow-flac" }
+    { title: 'Lofi Girl (Community Relay)', file: 'https://play.streamafrica.net/lofiradio' },
+    { title: 'Laut.FM | Lofi 24/7', file: 'https://lofi.stream.laut.fm/lofi' },
+    { title: "Dr Dick's Dub Shack", file: 'https://streamer.radio.co/s0635c8b0d/listen' },
+    { title: 'Zeno FM | Study Lofi', file: 'https://stream.zeno.fm/f3wvbbqmdg8uv' },
+    { title: 'Zeno FM | Chill Beats', file: 'https://stream.zeno.fm/0r0xa792kwzuv' },
+    { title: 'FluxFM | Chillhop', file: 'https://channels.fluxfm.de/chillhop/externalembedflxhp/stream.mp3' },
+    { title: 'Nightride FM | Chillsynth', file: 'https://stream.nightride.fm/chillsynth.m4a' },
+    { title: 'SomaFM | Secret Agent', file: 'https://ice1.somafm.com/secretagent-128-aac' },
+    { title: 'SomaFM | Deep Space One', file: 'https://ice1.somafm.com/deepspaceone-128-aac' },
+    { title: 'SomaFM | Groove Salad', file: 'https://ice1.somafm.com/groovesalad-256-mp3' },
+    { title: 'SomaFM | Drone Zone', file: 'https://ice1.somafm.com/dronezone-256-mp3' },
+    { title: 'SomaFM | DEF CON Radio', file: 'https://ice1.somafm.com/defcon-128-aac' },
+    { title: 'SomaFM | Space Station', file: 'https://ice1.somafm.com/spacestation-128-aac' },
+    { title: 'SomaFM | Vaporwaves', file: 'https://ice1.somafm.com/vaporwaves-128-aac' },
+    { title: 'SomaFM | Synphaera', file: 'https://ice1.somafm.com/synphaera-128-aac' },
+    { title: 'Exclusively Pink Floyd', file: 'https://streaming.exclusive.radio/er/pinkfloyd/icecast.audio' },
+    { title: 'Exclusively Pink Floyd | Hits', file: 'https://streaming.exclusive.radio/er/pinkfloydhits/icecast.audio' },
+    { title: 'Radio Paradise | Mellow Mix', file: 'https://stream.radioparadise.com/mellow-flac' }
 ];
 
-let lofiCurrentIndex = 0;
-const lofiAudio = new Audio(LOFI_STATIONS[lofiCurrentIndex].file);
-lofiAudio.crossOrigin = "anonymous";
+let lofiCurrentIndex = Math.min(
+    LOFI_STATIONS.length - 1,
+    Math.max(0, parseInt(fwSettings.lofiIndex, 10) || 0)
+);
+const lofiAudio = new Audio();
+lofiAudio.preload = 'none';
 let lofiIsPlaying = false;
+let lofiFailures = 0;
+let lofiFailureAt = 0;
+let lofiBufferTimer = null;
+let lofiPlayToken = 0;
 let musicMode = 'ost'; // 'ost' or 'lofi'
 
 // DOM Elements
@@ -1484,104 +1552,160 @@ function highlightLofiItem() {
 highlightLofiItem();
 
 function loadLofiStation(index) {
+    if (!Number.isFinite(index) || index < 0 || index >= LOFI_STATIONS.length) return;
+    lofiPlayToken++;
     lofiCurrentIndex = index;
     const station = LOFI_STATIONS[index];
     lofiAudio.src = station.file;
     highlightLofiItem();
+    saveSettings({ lofiIndex: index });
 
     if (musicMode === 'lofi') {
-        lofiStatusText.textContent = lofiIsPlaying ? "Live Now" : "Radio Ready";
+        lofiStatusText.textContent = lofiIsPlaying ? 'Live Now' : 'Radio Ready';
         updateTrackNameDisplay(station.title);
     }
 }
 
-function playLofi() {
-    lofiStatusText.textContent = "Connecting...";
-    lofiAudio.play().then(() => {
-        lofiIsPlaying = true;
-        lofiStatusText.textContent = "Live Now";
+function markLofiPlaying() {
+    window.clearTimeout(lofiBufferTimer);
+    lofiFailures = 0;
+    lofiIsPlaying = true;
+
+    if (musicMode === 'lofi') {
+        lofiStatusText.textContent = 'Live Now';
         lofiWidget.classList.add('playing');
         ostPlayIcon.innerHTML = PAUSE_SVG;
         ostMusicBars.forEach(b => b.classList.add('playing'));
-    }).catch(e => {
-        console.warn("Lofi Stream Error: ", e);
-        lofiStatusText.textContent = "Stream Offline";
-        updateTrackNameDisplay("Connection failed. Please try again later.");
-    });
+        updateTrackNameDisplay(LOFI_STATIONS[lofiCurrentIndex].title);
+    }
+}
+
+function handleLofiFailure(message) {
+    // The error event and the rejected play promise can both fire for one failure.
+    const now = Date.now();
+    if (now - lofiFailureAt < 1200) return;
+    lofiFailureAt = now;
+
+    window.clearTimeout(lofiBufferTimer);
+    lofiFailures++;
+    lofiIsPlaying = false;
+    lofiWidget.classList.remove('playing');
+    ostMusicBars.forEach(b => b.classList.remove('playing'));
+    ostPlayIcon.innerHTML = PLAY_SVG;
+
+    if (musicMode !== 'lofi') return;
+
+    const station = LOFI_STATIONS[lofiCurrentIndex];
+    lofiStatusText.textContent = message;
+    updateTrackNameDisplay(`${station ? station.title : 'Station'} — unavailable`);
+
+    // Try the next station twice, then let the user choose.
+    if (lofiFailures <= 2 && LOFI_STATIONS.length > 1) {
+        const token = lofiPlayToken;
+        window.setTimeout(() => {
+            if (token !== lofiPlayToken || musicMode !== 'lofi') return;
+            loadLofiStation((lofiCurrentIndex + 1) % LOFI_STATIONS.length);
+            playLofi();
+        }, 900);
+    } else {
+        lofiStatusText.textContent = 'Stream offline — pick another station';
+    }
+}
+
+function playLofi() {
+    if (!lofiAudio.src) loadLofiStation(lofiCurrentIndex);
+    const token = ++lofiPlayToken;
+
+    if (musicMode === 'lofi') {
+        lofiStatusText.textContent = 'Connecting...';
+    }
+
+    const playPromise = lofiAudio.play();
+    if (playPromise && typeof playPromise.then === 'function') {
+        playPromise
+            .then(() => {
+                if (token === lofiPlayToken) markLofiPlaying();
+            })
+            .catch(() => {
+                if (token === lofiPlayToken) handleLofiFailure('Stream offline');
+            });
+    }
 }
 
 function pauseLofi() {
+    lofiPlayToken++;
+    window.clearTimeout(lofiBufferTimer);
     lofiAudio.pause();
     lofiIsPlaying = false;
-    lofiStatusText.textContent = "Paused";
+    lofiStatusText.textContent = 'Paused';
     lofiWidget.classList.remove('playing');
     ostPlayIcon.innerHTML = PLAY_SVG;
     ostMusicBars.forEach(b => b.classList.remove('playing'));
 }
 
-// Mode Switching Logic
-modeOstBtn.addEventListener('click', () => {
-    if (musicMode === 'ost') return;
-    musicMode = 'ost';
-    modeOstBtn.classList.add('active');
-    modeLofiBtn.classList.remove('active');
-    musicPanelTitle.textContent = "Firewatch OST";
-    document.getElementById('music-panel').classList.remove('lofi-mode');
+lofiAudio.addEventListener('playing', markLofiPlaying);
 
-    // Update Tracklist Toggle Button
-    if (tracklistToggleText) {
-        tracklistToggleText.textContent = "Track List";
-    }
-
-    // Stop Lofi if playing
-    if (lofiIsPlaying) {
-        pauseLofi();
-    }
-
-    // Sync UI based on OST state
-    ostPlayIcon.innerHTML = ostIsPlaying ? PAUSE_SVG : PLAY_SVG;
-    ostMusicBars.forEach(b => b.classList.toggle('playing', ostIsPlaying));
-
-    // Update top-left widget
-    lofiStatusText.textContent = ostIsPlaying ? "Now Playing" : "Paused";
-    if (OST_TRACKS[ostCurrentIndex]) {
-        updateTrackNameDisplay(OST_TRACKS[ostCurrentIndex].title);
-    }
-    lofiWidget.classList.toggle('playing', ostIsPlaying);
+lofiAudio.addEventListener('waiting', () => {
+    if (musicMode !== 'lofi' || !lofiIsPlaying) return;
+    lofiStatusText.textContent = 'Buffering...';
+    window.clearTimeout(lofiBufferTimer);
+    lofiBufferTimer = window.setTimeout(() => handleLofiFailure('Stream stalled'), 15000);
 });
 
-modeLofiBtn.addEventListener('click', () => {
-    if (musicMode === 'lofi') return;
-    musicMode = 'lofi';
-    modeLofiBtn.classList.add('active');
-    modeOstBtn.classList.remove('active');
-    musicPanelTitle.textContent = "Lofi Live Radio";
-    document.getElementById('music-panel').classList.add('lofi-mode');
-
-    // Update Tracklist Toggle Button
-    if (tracklistToggleText) {
-        tracklistToggleText.textContent = "Station List";
-    }
-
-    // Stop OST if playing
-    if (ostIsPlaying) {
-        pauseTrack();
-    }
-
-    // Sync UI based on Lofi state
-    ostPlayIcon.innerHTML = lofiIsPlaying ? PAUSE_SVG : PLAY_SVG;
-    ostMusicBars.forEach(b => b.classList.toggle('playing', lofiIsPlaying));
-
-    // Update top-left widget
-    lofiStatusText.textContent = lofiIsPlaying ? "Live Now" : "Radio Ready";
-    updateTrackNameDisplay(LOFI_STATIONS[lofiCurrentIndex].title);
-    lofiWidget.classList.toggle('playing', lofiIsPlaying);
+lofiAudio.addEventListener('error', () => {
+    if (musicMode !== 'lofi') return;
+    handleLofiFailure('Stream offline');
 });
+
+lofiAudio.addEventListener('stalled', () => {
+    if (musicMode !== 'lofi' || !lofiIsPlaying) return;
+    lofiStatusText.textContent = 'Buffering...';
+});
+
+// --- Mode switching ---
+function setMusicMode(mode, persist = true) {
+    musicMode = mode === 'lofi' ? 'lofi' : 'ost';
+    const isLofi = musicMode === 'lofi';
+
+    modeOstBtn.classList.toggle('active', !isLofi);
+    modeLofiBtn.classList.toggle('active', isLofi);
+    musicPanelTitle.textContent = isLofi ? 'Lofi Live Radio' : 'Firewatch OST';
+    document.getElementById('music-panel').classList.toggle('lofi-mode', isLofi);
+
+    if (tracklistToggleText) {
+        tracklistToggleText.textContent = isLofi ? 'Station List' : 'Track List';
+    }
+
+    // Only one audio source should ever be playing.
+    if (isLofi && ostIsPlaying) pauseTrack();
+    if (!isLofi && lofiIsPlaying) pauseLofi();
+
+    if (isLofi) {
+        ostPlayIcon.innerHTML = lofiIsPlaying ? PAUSE_SVG : PLAY_SVG;
+        ostMusicBars.forEach(b => b.classList.toggle('playing', lofiIsPlaying));
+        lofiStatusText.textContent = lofiIsPlaying ? 'Live Now' : 'Radio Ready';
+        updateTrackNameDisplay(LOFI_STATIONS[lofiCurrentIndex].title);
+        lofiWidget.classList.toggle('playing', lofiIsPlaying);
+    } else {
+        ostPlayIcon.innerHTML = ostIsPlaying ? PAUSE_SVG : PLAY_SVG;
+        ostMusicBars.forEach(b => b.classList.toggle('playing', ostIsPlaying));
+        lofiStatusText.textContent = ostIsPlaying
+            ? 'Now Playing'
+            : (ostAudio.currentTime > 0 ? 'Paused' : 'Ready');
+        const track = OST_TRACKS[ostCurrentIndex];
+        if (track) updateTrackNameDisplay(track.title);
+        lofiWidget.classList.toggle('playing', ostIsPlaying);
+    }
+
+    if (persist) saveSettings({ musicMode });
+}
+
+modeOstBtn.addEventListener('click', () => setMusicMode('ost'));
+modeLofiBtn.addEventListener('click', () => setMusicMode('lofi'));
 
 // Overriding main play button for dual mode
 ostPlayBtn.addEventListener('click', () => {
     if (musicMode === 'ost') {
-        // Handle OST Play/Pause (Existing logic moved here for clarity)
         if (!ostAudio.src || ostAudio.src === window.location.href) {
             loadTrack(0);
             if (ostShuffleOn) generateShuffleQueue();
@@ -1592,10 +1716,10 @@ ostPlayBtn.addEventListener('click', () => {
             playTrack();
         }
     } else {
-        // Handle Lofi Play/Pause (Direct Audio)
         if (lofiIsPlaying) {
             pauseLofi();
         } else {
+            loadLofiStation(lofiCurrentIndex);
             playLofi();
         }
     }
