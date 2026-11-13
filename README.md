@@ -109,7 +109,6 @@ Clearing site data resets the dashboard. The welcome screen uses `sessionStorage
 ├── script.js         Clock, timers, Ranger Log, audio, shortcuts
 ├── manifest.json     PWA metadata
 ├── vercel.json       Cache and security headers
-├── og-image.jpg      Social sharing card
 ├── icon/             App icons, including a maskable variant
 ├── wallpapers/       Theme backgrounds
 └── ost/              Firewatch soundtrack files
