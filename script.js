@@ -89,7 +89,7 @@ const elMinutes = document.getElementById('clock-minutes');
 const elDate = document.getElementById('clock-date');
 const elAmPm = document.getElementById('clock-ampm');
 
-let use24h = false; // default to 12-hour
+let use24h = !!fwSettings.use24h;
 
 function updateClock() {
     const now = new Date();
@@ -116,33 +116,61 @@ const format12 = document.getElementById('format-12');
 const format24 = document.getElementById('format-24');
 const formatSlider = document.getElementById('format-slider');
 
-function setClockFormat(is24) {
+function setClockFormat(is24, options = {}) {
+    const { persist = true, animate = true } = options;
     use24h = is24;
 
     // Update active label
     format12.classList.toggle('active', !is24);
     format24.classList.toggle('active', is24);
+    format12.setAttribute('aria-checked', String(!is24));
+    format24.setAttribute('aria-checked', String(is24));
+    format12.tabIndex = is24 ? -1 : 0;
+    format24.tabIndex = is24 ? 0 : -1;
 
     // Slide the indicator
     formatSlider.classList.toggle('right', is24);
 
     // Show/hide AM-PM
     elAmPm.classList.toggle('hidden-ampm', is24);
+    document.documentElement.setAttribute('data-clock-format', is24 ? '24' : '12');
+
+    if (persist) saveSettings({ use24h: is24 });
+
+    if (!animate) {
+        updateClock();
+        return;
+    }
 
     // Smooth transition on the clock digits
-    const clockContainer = document.getElementById('clock-container');
-    clockContainer.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    clockContainer.style.opacity = '0.6';
-    clockContainer.style.transform = 'scale(0.97)';
+    const clockEl = document.getElementById('clock-container');
+    clockEl.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    clockEl.style.opacity = '0.6';
+    clockEl.style.transform = 'scale(0.97)';
     setTimeout(() => {
         updateClock();
-        clockContainer.style.opacity = '1';
-        clockContainer.style.transform = 'scale(1)';
+        clockEl.style.opacity = '1';
+        clockEl.style.transform = 'scale(1)';
+        // Let the clock's own transition take over again.
+        setTimeout(() => {
+            if (!clockEl.classList.contains('clock-fixed')) clockEl.style.transition = '';
+        }, 320);
     }, 150);
 }
 
 format12.addEventListener('click', () => setClockFormat(false));
 format24.addEventListener('click', () => setClockFormat(true));
+document.getElementById('clock-format-toggle').addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setClockFormat(false);
+        format12.focus();
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setClockFormat(true);
+        format24.focus();
+    }
+});
 
 /* =============================================================
    THEME TOGGLE
@@ -180,18 +208,20 @@ document.getElementById('btn-theme').addEventListener('click', () => {
    CLOCK POSITION TOGGLE
    ============================================================= */
 const POSITIONS = ['center', 'top', 'bottom-left'];
-let posIndex = 0;
+let posIndex = Math.max(0, POSITIONS.indexOf(fwSettings.clockPos));
 const dashboard = document.getElementById('dashboard');
+
+dashboard.setAttribute('data-clock-pos', POSITIONS[posIndex]);
 
 document.getElementById('btn-clock-pos').addEventListener('click', () => {
     posIndex = (posIndex + 1) % POSITIONS.length;
     dashboard.setAttribute('data-clock-pos', POSITIONS[posIndex]);
 
     // Reset any manual drag when switching presets
-    const clockEl = document.getElementById('clock-container');
-    clockEl.classList.remove('clock-dragging');
-    clockEl.style.left = '';
-    clockEl.style.top = '';
+    if (typeof window.__resetClockPosition === 'function') {
+        window.__resetClockPosition();
+    }
+    saveSettings({ clockPos: POSITIONS[posIndex], clockXY: null });
 });
 
 /* =============================================================
@@ -199,60 +229,134 @@ document.getElementById('btn-clock-pos').addEventListener('click', () => {
    ============================================================= */
 (function () {
     const clockEl = document.getElementById('clock-container');
+    const DEAD_ZONE = 6;
+    const MARGIN = 8;
     let isDragging = false;
-    let startX, startY, origLeft, origTop;
-    const DEAD_ZONE = 5; // px — prevents accidental drag on simple click
     let dragStarted = false;
+    let startX = 0;
+    let startY = 0;
+    let origLeft = 0;
+    let origTop = 0;
+    let pointerId = null;
 
-    function pointerDown(e) {
-        // Ignore if clicking inside a button / interactive child
+    function clampPosition(left, top) {
+        const maxLeft = Math.max(MARGIN, window.innerWidth - clockEl.offsetWidth - MARGIN);
+        const maxTop = Math.max(MARGIN, window.innerHeight - clockEl.offsetHeight - MARGIN);
+        return {
+            left: Math.min(Math.max(MARGIN, left), maxLeft),
+            top: Math.min(Math.max(MARGIN, top), maxTop)
+        };
+    }
+
+    function placeFixed(left, top) {
+        const position = clampPosition(left, top);
+        clockEl.classList.add('clock-fixed');
+        clockEl.style.left = `${position.left}px`;
+        clockEl.style.top = `${position.top}px`;
+        return position;
+    }
+
+    function savePosition() {
+        if (!clockEl.classList.contains('clock-fixed')) return;
+        const rect = clockEl.getBoundingClientRect();
+        saveSettings({
+            clockXY: {
+                left: Math.round(rect.left),
+                top: Math.round(rect.top)
+            }
+        });
+    }
+
+    function resetClockPosition() {
+        clockEl.classList.remove('clock-fixed', 'clock-dragging');
+        clockEl.style.left = '';
+        clockEl.style.top = '';
+        clockEl.style.transition = '';
+        saveSettings({ clockXY: null });
+    }
+
+    function onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
         if (e.target.closest('button, input, a')) return;
 
-        const evt = e.touches ? e.touches[0] : e;
-        isDragging = true;
-        dragStarted = false;
-
-        // If already dragging-state, use current position; otherwise compute from bounding rect
         const rect = clockEl.getBoundingClientRect();
         origLeft = rect.left;
         origTop = rect.top;
-        startX = evt.clientX;
-        startY = evt.clientY;
+        startX = e.clientX;
+        startY = e.clientY;
+        isDragging = true;
+        dragStarted = false;
+        pointerId = e.pointerId;
 
+        try {
+            clockEl.setPointerCapture(e.pointerId);
+        } catch (error) {
+            /* Pointer capture is a progressive enhancement. */
+        }
         e.preventDefault();
     }
 
-    function pointerMove(e) {
-        if (!isDragging) return;
-        const evt = e.touches ? e.touches[0] : e;
-        const dx = evt.clientX - startX;
-        const dy = evt.clientY - startY;
+    function onPointerMove(e) {
+        if (!isDragging || e.pointerId !== pointerId) return;
 
-        // Only start actual drag after exceeding dead-zone
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
         if (!dragStarted) {
             if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
             dragStarted = true;
-            clockEl.classList.add('clock-dragging');
+            clockEl.classList.add('clock-fixed', 'clock-dragging');
+            clockEl.style.transition = 'none';
         }
 
-        clockEl.style.left = `${origLeft + dx}px`;
-        clockEl.style.top = `${origTop + dy}px`;
+        placeFixed(origLeft + dx, origTop + dy);
     }
 
-    function pointerUp() {
+    function finishDrag(e) {
+        if (!isDragging) return;
+        if (e && e.pointerId !== undefined && pointerId !== null && e.pointerId !== pointerId) {
+            return;
+        }
+
         isDragging = false;
+        clockEl.classList.remove('clock-dragging');
+        if (pointerId !== null) {
+            try {
+                clockEl.releasePointerCapture(pointerId);
+            } catch (error) {
+                /* Already released. */
+            }
+        }
+        pointerId = null;
+
+        if (dragStarted) savePosition();
         dragStarted = false;
     }
 
-    // Mouse events
-    clockEl.addEventListener('mousedown', pointerDown);
-    window.addEventListener('mousemove', pointerMove);
-    window.addEventListener('mouseup', pointerUp);
+    function restoreClockPosition() {
+        const position = fwSettings.clockXY;
+        if (!position || !Number.isFinite(position.left) || !Number.isFinite(position.top)) {
+            return;
+        }
+        placeFixed(position.left, position.top);
+        requestAnimationFrame(() => placeFixed(position.left, position.top));
+    }
 
-    // Touch events
-    clockEl.addEventListener('touchstart', pointerDown, { passive: false });
-    window.addEventListener('touchmove', pointerMove, { passive: false });
-    window.addEventListener('touchend', pointerUp);
+    clockEl.addEventListener('pointerdown', onPointerDown);
+    clockEl.addEventListener('pointermove', onPointerMove);
+    clockEl.addEventListener('pointerup', finishDrag);
+    clockEl.addEventListener('pointercancel', finishDrag);
+    clockEl.addEventListener('dblclick', resetClockPosition);
+
+    window.addEventListener('resize', () => {
+        if (!clockEl.classList.contains('clock-fixed')) return;
+        const rect = clockEl.getBoundingClientRect();
+        placeFixed(rect.left, rect.top);
+        savePosition();
+    });
+
+    window.__resetClockPosition = resetClockPosition;
+    window.__restoreClockPosition = restoreClockPosition;
 })();
 
 /* =============================================================

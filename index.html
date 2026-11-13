@@ -526,9 +526,11 @@
                 </svg>
             </button>
             <!-- 12/24 hour toggle -->
-            <div class="clock-format-toggle" id="clock-format-toggle">
-                <span class="format-label active" id="format-12" data-format="12">12</span>
-                <span class="format-label" id="format-24" data-format="24">24</span>
+            <div class="clock-format-toggle" id="clock-format-toggle" role="radiogroup" aria-label="Clock format">
+                <button type="button" class="format-label active" id="format-12" data-format="12" role="radio"
+                    aria-checked="true" tabindex="0">12</button>
+                <button type="button" class="format-label" id="format-24" data-format="24" role="radio"
+                    aria-checked="false" tabindex="-1">24</button>
                 <div class="format-slider" id="format-slider"></div>
             </div>
         </div>

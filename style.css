@@ -638,12 +638,30 @@ html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     cursor: grabbing;
 }
 
-/* Free-drag mode — clock becomes fixed-positioned */
-.clock-container.clock-dragging {
+/* Custom dragged position — clock stays behind every piece of UI */
+.clock-container.clock-fixed {
     position: fixed;
-    z-index: 50;
+    z-index: 2;
+    transition: none;
+}
+
+.clock-container.clock-dragging {
     cursor: grabbing;
     transition: none;
+}
+
+.clock-container.clock-fixed:not(.clock-dragging) {
+    cursor: grab;
+}
+
+/* 24-hour mode hides AM/PM before the main script runs */
+html[data-clock-format="24"] .clock-ampm {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    width: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
 .clock-time {
@@ -2060,6 +2078,9 @@ html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     justify-content: center;
     width: 2.4rem;
     height: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
     font-family: var(--font-display);
     font-size: 0.8rem;
     letter-spacing: 0.05em;
