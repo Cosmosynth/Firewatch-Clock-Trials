@@ -60,21 +60,44 @@ let particleColor = 'rgba(255, 180, 100, 0.6)';
    WELCOME SCREEN
    ============================================================= */
 const welcomeOverlay = document.getElementById('welcome-overlay');
-const alreadyVisited = sessionStorage.getItem('fw-visited');
+let welcomeDismissed = false;
+let welcomeTimer = null;
+
+function dismissWelcome() {
+    if (welcomeDismissed || !welcomeOverlay) return;
+    welcomeDismissed = true;
+    window.clearTimeout(welcomeTimer);
+    try {
+        sessionStorage.setItem('fw-visited', '1');
+    } catch (error) {
+        /* Ignore private-mode storage errors. */
+    }
+    welcomeOverlay.classList.add('hidden');
+    window.setTimeout(() => {
+        welcomeOverlay.style.display = 'none';
+    }, 900);
+}
+
+function welcomeIsVisible() {
+    return !!welcomeOverlay && !welcomeDismissed;
+}
+
+let alreadyVisited = false;
+try {
+    alreadyVisited = sessionStorage.getItem('fw-visited') === '1';
+} catch (error) {
+    alreadyVisited = false;
+}
 
 if (alreadyVisited) {
-    welcomeOverlay.classList.add('hidden');
-    welcomeOverlay.addEventListener('transitionend', () => {
-        welcomeOverlay.style.display = 'none';
-    }, { once: true });
+    welcomeDismissed = true;
+    if (welcomeOverlay) welcomeOverlay.style.display = 'none';
 } else {
-    // Auto-dismiss welcome screen after 3 seconds
-    setTimeout(() => {
-        sessionStorage.setItem('fw-visited', '1');
-        welcomeOverlay.classList.add('hidden');
-        setTimeout(() => { welcomeOverlay.style.display = 'none'; }, 900);
-    }, 3000);
+    welcomeTimer = window.setTimeout(dismissWelcome, 3000);
+    welcomeOverlay.addEventListener('click', dismissWelcome);
+    document.addEventListener('keydown', dismissWelcome, { once: true });
 }
+
 
 
 /* =============================================================

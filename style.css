@@ -340,6 +340,10 @@ html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     transform: scale(1.03);
 }
 
+html.fw-visited .welcome-overlay {
+    display: none;
+}
+
 .welcome-icon {
     width: 60px;
     height: 60px;
@@ -442,6 +446,29 @@ html[data-theme="boat-sea-red"] .bg-boat-sea-red {
     font-weight: 500;
     color: #ff9e64;
     letter-spacing: 0.02em;
+}
+
+.welcome-fan {
+    margin: 0.45rem 0 0;
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(253, 232, 208, 0.42);
+    opacity: 0;
+    animation: welcomeFadeUp 0.6s 1.1s ease forwards;
+}
+
+.welcome-skip {
+    position: absolute;
+    bottom: 1.35rem;
+    margin: 0;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(253, 232, 208, 0.3);
+    opacity: 0;
+    animation: welcomeFadeUp 0.6s 1.8s ease forwards;
 }
 
 /* ================================================================
