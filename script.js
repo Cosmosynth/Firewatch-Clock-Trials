@@ -1770,7 +1770,10 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+    resizeCanvas();
+    if (reduceMotion) drawParticles(false);
+});
 
 class Firefly {
     constructor() {
@@ -1807,13 +1810,11 @@ class Firefly {
     }
 
     draw() {
-        const cs = getComputedStyle(document.documentElement);
-        const color = cs.getPropertyValue('--particle-color').trim() || 'rgba(255,180,100,0.5)';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = color.replace(/[\d.]+\)$/, `${this.opacity})`);
+        ctx.fillStyle = particleColor.replace(/[\d.]+\)$/, `${this.opacity})`);
         ctx.shadowBlur = this.size * 6;
-        ctx.shadowColor = color.replace(/[\d.]+\)$/, `${this.opacity * 0.8})`);
+        ctx.shadowColor = particleColor.replace(/[\d.]+\)$/, `${this.opacity * 0.8})`);
         ctx.fill();
         ctx.shadowBlur = 0;
     }
@@ -1823,12 +1824,43 @@ for (let i = 0; i < 35; i++) {
     particles.push(new Firefly());
 }
 
-function animateParticles() {
+function drawParticles(update = true) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
+    particles.forEach(p => {
+        if (update) p.update();
+        p.draw();
+    });
+}
+
+function animateParticles() {
+    if (!reduceMotion && !document.hidden) {
+        drawParticles(true);
+    }
     requestAnimationFrame(animateParticles);
 }
-animateParticles();
+
+refreshParticleColor();
+window.__fwRedrawParticles = () => {
+    if (reduceMotion) drawParticles(false);
+};
+
+if (reduceMotion) {
+    // Respect reduced motion: draw a calm, static field of fireflies.
+    particles.forEach(p => { p.opacity = p.targetOpacity; });
+    drawParticles(false);
+} else {
+    animateParticles();
+}
+
+if (typeof reduceMotionQuery.addEventListener === 'function') {
+    reduceMotionQuery.addEventListener('change', (event) => {
+        reduceMotion = event.matches;
+        if (reduceMotion) {
+            particles.forEach(p => { p.opacity = p.targetOpacity; });
+            drawParticles(false);
+        }
+    });
+}
 
 /* =============================================================
    ABOUT / ATTRIBUTION MODAL
@@ -1895,17 +1927,44 @@ if (infoOverlay) {
 }
 
 /* =============================================================
-   KEYBOARD SHORTCUTS (bonus feature)
+   KEYBOARD SHORTCUTS
    ============================================================= */
+function isTypingTarget(target) {
+    if (!target) return false;
+    const tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+}
+
 document.addEventListener('keydown', (e) => {
-    if (e.key === 't' || e.key === 'T') document.getElementById('btn-theme').click();
-    if (e.key === 'm' || e.key === 'M') document.getElementById('btn-clock-pos').click();
-    if (e.key === 'p' || e.key === 'P') togglePanel('pomodoro');
-    if (e.key === 's' || e.key === 'S') togglePanel('stopwatch');
-    if (e.key === 'o' || e.key === 'O') togglePanel('music');
-    if (e.key === 'f' || e.key === 'F') document.getElementById('btn-fullscreen').click();
-    // Spacebar toggles play/pause (only if no input is focused)
-    if (e.key === ' ' && document.activeElement.tagName !== 'INPUT') {
+    // Escape closes the topmost surface.
+    if (e.key === 'Escape') {
+        if (infoOverlay && infoOverlay.classList.contains('open')) {
+            e.preventDefault();
+            closeInfo();
+            return;
+        }
+        closeAllPanels();
+        return;
+    }
+
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (infoOverlay && infoOverlay.classList.contains('open')) return;
+    if (welcomeIsVisible()) return;
+    if (isTypingTarget(e.target)) return;
+
+    const key = e.key.toLowerCase();
+
+    if (key === 't') document.getElementById('btn-theme').click();
+    else if (key === 'm') document.getElementById('btn-clock-pos').click();
+    else if (key === 'p') togglePanel('pomodoro');
+    else if (key === 's') togglePanel('stopwatch');
+    else if (key === 'o') togglePanel('music');
+    else if (key === 'r') togglePanel('ranger');
+    else if (key === 'i') openInfo();
+    else if (key === 'f') document.getElementById('btn-fullscreen').click();
+    else if (key === ' ') {
+        // Don't double-fire when a button or link already handles Space.
+        if (e.target.closest('button, a, [role="button"]')) return;
         e.preventDefault();
         ostPlayBtn.click();
     }

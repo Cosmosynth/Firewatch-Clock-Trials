@@ -2597,6 +2597,35 @@ html[data-clock-format="24"] .clock-ampm {
         font-size: 16px;
     }
 }
+
+/* ================================================================
+   ACCESSIBILITY & MOTION
+   ================================================================ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible) {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .music-status-widget.playing .lofi-track-name {
+        animation: none !important;
+    }
+}
+
 /* ================================================================
    UTILITY
    ================================================================ */
