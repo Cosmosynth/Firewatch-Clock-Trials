@@ -305,6 +305,18 @@
                 <span>Stopwatch</span>
             </button>
             <div class="toolbar-divider"></div>
+            <button class="toolbar-btn" id="btn-ranger" aria-label="Ranger Log checklist">
+                <svg viewBox="0 0 24 24">
+                    <title>Open Ranger Log Checklist</title>
+                    <rect x="5" y="4" width="14" height="17" rx="2" />
+                    <path d="M9 4V3h6v1" />
+                    <line x1="9" y1="9" x2="15" y2="9" />
+                    <line x1="9" y1="13" x2="15" y2="13" />
+                    <line x1="9" y1="17" x2="13" y2="17" />
+                </svg>
+                <span>Ranger Log</span>
+            </button>
+            <div class="toolbar-divider"></div>
             <button class="toolbar-btn" id="btn-music" aria-label="Firewatch OST">
                 <svg viewBox="0 0 24 24">
                     <title>Play Firewatch OST Soundtrack</title>
@@ -414,6 +426,25 @@
             </div>
             <div id="sw-laps"
                 style="margin-top:0.7rem;max-height:100px;overflow-y:auto;font-size:0.7rem;color:var(--text-secondary);letter-spacing:0.05em;">
+            </div>
+        </div>
+
+        <!-- ====== RANGER LOG PANEL ====== -->
+        <div class="panel ranger-panel" id="ranger-panel">
+            <div class="ranger-header">
+                <div class="panel-title">Ranger Log</div>
+                <span class="ranger-count" id="ranger-count">0 / 0</span>
+            </div>
+            <p class="ranger-hint">Today's lookout checklist</p>
+            <form class="ranger-add" id="ranger-add-form">
+                <input type="text" id="ranger-input" class="ranger-input" maxlength="160" autocomplete="off"
+                    placeholder="Add a task..." aria-label="New ranger log task" />
+                <button type="submit" class="ranger-add-btn" id="ranger-add-btn">Add</button>
+            </form>
+            <ul class="ranger-list" id="ranger-list" aria-live="polite"></ul>
+            <p class="ranger-empty" id="ranger-empty">No lookouts posted yet. Add the first task for today.</p>
+            <div class="ranger-footer">
+                <button type="button" class="timer-btn" id="ranger-clear">Clear completed</button>
             </div>
         </div>
 

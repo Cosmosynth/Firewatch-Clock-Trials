@@ -1621,6 +1621,187 @@ html[data-clock-format="24"] .clock-ampm {
     transform: translateX(-50%) translateY(0) scale(1);
 }
 
+.ranger-panel {
+    bottom: 5.5rem;
+    left: 2rem;
+    width: 320px;
+    transform: translateY(12px) scale(0.97);
+}
+
+.ranger-panel.visible {
+    transform: translateY(0) scale(1);
+}
+
+.ranger-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.ranger-header .panel-title {
+    margin-bottom: 0;
+}
+
+.ranger-count {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+}
+
+.ranger-hint {
+    margin: 0 0 0.9rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+}
+
+.ranger-add {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.7rem;
+}
+
+.ranger-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--widget-border);
+    border-radius: 0.55rem;
+    background: rgba(0, 0, 0, 0.22);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.ranger-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.ranger-input:focus {
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.ranger-add-btn {
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--accent);
+    border-radius: 0.55rem;
+    background: var(--btn-hover-bg);
+    color: var(--accent);
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ranger-add-btn:hover {
+    background: var(--accent);
+    color: #1a1a2e;
+}
+
+.ranger-add-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: var(--widget-border);
+}
+
+.ranger-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.ranger-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.42rem 0.15rem;
+    border-bottom: 1px solid var(--widget-border);
+}
+
+.ranger-item:last-child {
+    border-bottom: none;
+}
+
+.ranger-check {
+    width: 15px;
+    height: 15px;
+    margin: 0.1rem 0 0;
+    flex-shrink: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.ranger-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+
+.ranger-item.done .ranger-text {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.ranger-delete {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.ranger-delete:hover {
+    opacity: 1;
+    color: var(--accent);
+    background: var(--btn-hover-bg);
+}
+
+.ranger-empty {
+    margin: 0.9rem 0 0.2rem;
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.ranger-empty[hidden] {
+    display: none;
+}
+
+.ranger-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.8rem;
+}
+
 /* ================================================================
    RESPONSIVENESS
    ================================================================ */
@@ -1680,6 +1861,10 @@ html[data-clock-format="24"] .clock-ampm {
 
     .panel.visible {
         transform: translateY(0) scale(1) !important;
+    }
+
+    .ranger-panel {
+        width: auto;
     }
 
     .dashboard[data-clock-pos="top"] {
@@ -2147,6 +2332,12 @@ html[data-clock-format="24"] .clock-ampm {
     padding: 0;
 }
 
+@media (max-width: 480px) {
+    .ranger-input {
+        /* 16px prevents iOS from zooming the page when the field is focused. */
+        font-size: 16px;
+    }
+}
 /* ================================================================
    UTILITY
    ================================================================ */

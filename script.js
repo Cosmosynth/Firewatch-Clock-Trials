@@ -366,17 +366,22 @@ const panels = {
     pomodoro: document.getElementById('pomodoro-panel'),
     stopwatch: document.getElementById('stopwatch-panel'),
     music: document.getElementById('music-panel'),
+    ranger: document.getElementById('ranger-panel'),
 };
 
 function closeAllPanels() {
     Object.values(panels).forEach(p => p.classList.remove('visible'));
-    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.toolbar-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-expanded', 'false');
+    });
     document.body.classList.remove('panel-open');
 }
 
 function togglePanel(name) {
     const panel = panels[name];
-    const btn = document.getElementById(`btn-${name === 'music' ? 'music' : name}`);
+    const btn = document.getElementById('btn-' + name);
+    if (!panel || !btn) return;
     const isVisible = panel.classList.contains('visible');
 
     // Close all panels
@@ -385,13 +390,21 @@ function togglePanel(name) {
     if (!isVisible) {
         panel.classList.add('visible');
         btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
         document.body.classList.add('panel-open');
     }
 }
 
+document.querySelectorAll('.toolbar-btn').forEach(btn => {
+    btn.setAttribute('aria-expanded', 'false');
+    const name = btn.id.replace('btn-', '');
+    if (panels[name]) btn.setAttribute('aria-controls', panels[name].id);
+});
+
 document.getElementById('btn-pomodoro').addEventListener('click', () => togglePanel('pomodoro'));
 document.getElementById('btn-stopwatch').addEventListener('click', () => togglePanel('stopwatch'));
 document.getElementById('btn-music').addEventListener('click', () => togglePanel('music'));
+document.getElementById('btn-ranger').addEventListener('click', () => togglePanel('ranger'));
 
 /* --- Close panels on tap outside / tap overlay --- */
 document.addEventListener('click', (e) => {
@@ -488,6 +501,150 @@ document.addEventListener('click', (e) => {
         currentY = 0;
     })
 })();
+
+/* =============================================================
+   RANGER LOG (CHECKLIST)
+   ============================================================= */
+const rangerListEl = document.getElementById('ranger-list');
+const rangerCountEl = document.getElementById('ranger-count');
+const rangerEmptyEl = document.getElementById('ranger-empty');
+const rangerInput = document.getElementById('ranger-input');
+const rangerAddForm = document.getElementById('ranger-add-form');
+const rangerAddBtn = document.getElementById('ranger-add-btn');
+const rangerClearBtn = document.getElementById('ranger-clear');
+
+function createRangerId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+    }
+    return `ranger-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function normalizeRangerItem(item) {
+    return {
+        id: String(item.id || createRangerId()),
+        text: String(item.text || '').slice(0, 160),
+        done: !!item.done,
+        createdAt: Number(item.createdAt) || Date.now(),
+        completedAt: item.completedAt || null
+    };
+}
+
+function loadRangerItems() {
+    const stored = readJSON(RANGER_KEY, null);
+    const items = Array.isArray(stored) ? stored : (stored && Array.isArray(stored.items) ? stored.items : []);
+    return items.map(normalizeRangerItem).filter(item => item.text.length > 0);
+}
+
+let rangerItems = loadRangerItems();
+
+function saveRangerItems() {
+    writeJSON(RANGER_KEY, { items: rangerItems, updatedAt: Date.now() });
+}
+
+function updateRangerSummary() {
+    const total = rangerItems.length;
+    const done = rangerItems.filter(item => item.done).length;
+    rangerCountEl.textContent = `${done} / ${total}`;
+    rangerEmptyEl.hidden = total > 0;
+    rangerClearBtn.disabled = done === 0;
+    rangerClearBtn.style.opacity = done === 0 ? '0.4' : '';
+    rangerClearBtn.style.pointerEvents = done === 0 ? 'none' : '';
+}
+
+function renderRangerLog() {
+    rangerListEl.textContent = '';
+
+    rangerItems.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'ranger-item' + (item.done ? ' done' : '');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'ranger-check';
+        checkbox.id = `ranger-item-${item.id}`;
+        checkbox.checked = item.done;
+        checkbox.setAttribute(
+            'aria-label',
+            `${item.done ? 'Mark as not done' : 'Mark as done'}: ${item.text}`
+        );
+        checkbox.addEventListener('change', () => {
+            item.done = checkbox.checked;
+            item.completedAt = item.done ? Date.now() : null;
+            li.classList.toggle('done', item.done);
+            checkbox.setAttribute(
+                'aria-label',
+                `${item.done ? 'Mark as not done' : 'Mark as done'}: ${item.text}`
+            );
+            saveRangerItems();
+            updateRangerSummary();
+        });
+
+        const label = document.createElement('label');
+        label.className = 'ranger-text';
+        label.htmlFor = checkbox.id;
+        label.textContent = item.text;
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'ranger-delete';
+        remove.textContent = '\u00d7';
+        remove.setAttribute('aria-label', `Delete task: ${item.text}`);
+        remove.addEventListener('click', () => {
+            rangerItems = rangerItems.filter(entry => entry.id !== item.id);
+            saveRangerItems();
+            renderRangerLog();
+        });
+
+        li.append(checkbox, label, remove);
+        rangerListEl.appendChild(li);
+    });
+
+    updateRangerSummary();
+}
+
+function addRangerItem() {
+    const text = rangerInput.value.trim().slice(0, 160);
+    if (!text) return;
+
+    rangerItems.unshift({
+        id: createRangerId(),
+        text,
+        done: false,
+        createdAt: Date.now(),
+        completedAt: null
+    });
+
+    rangerInput.value = '';
+    rangerAddBtn.disabled = true;
+    saveRangerItems();
+    renderRangerLog();
+    rangerInput.focus();
+}
+
+rangerAddForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    addRangerItem();
+});
+
+rangerInput.addEventListener('input', () => {
+    rangerAddBtn.disabled = rangerInput.value.trim().length === 0;
+});
+
+rangerClearBtn.addEventListener('click', () => {
+    rangerItems = rangerItems.filter(item => !item.done);
+    saveRangerItems();
+    renderRangerLog();
+});
+
+window.addEventListener('storage', (e) => {
+    if (e.key !== RANGER_KEY) return;
+    rangerItems = loadRangerItems();
+    renderRangerLog();
+});
+
+rangerAddBtn.disabled = true;
+renderRangerLog();
 
 /* =============================================================
    POMODORO TIMER
