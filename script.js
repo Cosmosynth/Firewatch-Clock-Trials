@@ -423,6 +423,7 @@ document.addEventListener('click', (e) => {
     let panelEl = null;
     let isDragging = false;
     const THRESHOLD = 80; // px to trigger dismiss
+    const HANDLE_HEIGHT = 48; // the sheet handle lives in this top region
 
     function getVisiblePanel() {
         return document.querySelector('.panel.visible');
@@ -434,16 +435,12 @@ document.addEventListener('click', (e) => {
         const panel = getVisiblePanel();
         if (!panel) return;
 
-        // Only start drag if touch is on the panel itself (not on interactive children deep inside)
         const touch = e.touches[0];
-        const target = e.target;
-
-        // Allow drag from the panel drag-handle area (top ~40px) or panel background
         const panelRect = panel.getBoundingClientRect();
         const touchYInPanel = touch.clientY - panelRect.top;
 
-        // Only initiate swipe from the top handle region or non-interactive areas
-        if (touchYInPanel <= 40 || (!target.closest('button, input, a, .ost-progress-bar, .volume-slider'))) {
+        // Only start from the drag handle so lists and controls keep scrolling normally.
+        if (touchYInPanel <= HANDLE_HEIGHT && !e.target.closest('button, input, a')) {
             startY = touch.clientY;
             currentY = startY;
             panelEl = panel;
@@ -468,38 +465,40 @@ document.addEventListener('click', (e) => {
         }
     }, { passive: true });
 
-    document.addEventListener('touchend', () => {
+    function finishSwipe() {
         if (!panelEl) return;
+        const panel = panelEl;
         const dy = currentY - startY;
 
-        panelEl.classList.remove('swiping');
+        panel.classList.remove('swiping');
 
         if (isDragging && dy > THRESHOLD) {
             // Dismiss — animate out then close
-            panelEl.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
-            panelEl.style.transform = 'translateY(100%)';
+            panel.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+            panel.style.transform = 'translateY(100%)';
             setTimeout(() => {
                 closeAllPanels();
-                panelEl.style.transition = '';
-                panelEl.style.transform = '';
-                panelEl = null;
+                panel.style.transition = '';
+                panel.style.transform = '';
+                if (panelEl === panel) panelEl = null;
             }, 300);
         } else {
             // Snap back
-            panelEl.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)';
-            panelEl.style.transform = '';
+            panel.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)';
+            panel.style.transform = '';
             setTimeout(() => {
-                if (panelEl) {
-                    panelEl.style.transition = '';
-                    panelEl = null;
-                }
+                panel.style.transition = '';
             }, 250);
+            panelEl = null;
         }
 
         isDragging = false;
         startY = 0;
         currentY = 0;
-    })
+    }
+
+    document.addEventListener('touchend', finishSwipe);
+    document.addEventListener('touchcancel', finishSwipe);
 })();
 
 /* =============================================================
