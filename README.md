@@ -35,7 +35,7 @@ This is an unofficial tribute. It is not affiliated with Campo Santo or Valve, a
 
 | Area | What it does |
 | --- | --- |
-| **Clock** | Live time, full date, 12/24-hour format, three preset positions, and free dragging with double-click reset. |
+| **Clock** | Live time, full date, 12/24-hour format, a matching browser-tab title, three preset positions, and free dragging with double-click reset. |
 | **Pomodoro** | Timestamp-based focus and break sessions that stay accurate in background tabs. Custom lengths, four-session cycle, long breaks, and an optional chime. |
 | **Stopwatch** | Millisecond precision with lap history. |
 | **Home status** | Running Pomodoro and stopwatch times stay visible above the toolbar. |

@@ -113,6 +113,20 @@ const elDate = document.getElementById('clock-date');
 const elAmPm = document.getElementById('clock-ampm');
 
 let use24h = !!fwSettings.use24h;
+const TAB_TITLE_SUFFIX = 'Firewatch';
+
+function updateTabTitle(now) {
+    const h = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const time = use24h
+        ? `${String(h).padStart(2, '0')}:${minutes}`
+        : `${String(h % 12 || 12).padStart(2, '0')}:${minutes} ${h >= 12 ? 'PM' : 'AM'}`;
+    const nextTitle = `${time} · ${TAB_TITLE_SUFFIX}`;
+
+    if (document.title !== nextTitle) {
+        document.title = nextTitle;
+    }
+}
 
 function updateClock() {
     const now = new Date();
@@ -127,10 +141,15 @@ function updateClock() {
     elHours.textContent = String(h).padStart(2, '0');
     elMinutes.textContent = String(now.getMinutes()).padStart(2, '0');
     elDate.textContent = `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
+    updateTabTitle(now);
 }
 
 updateClock();
 setInterval(updateClock, 1000);
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) updateClock();
+});
 
 /* =============================================================
    12/24 HOUR FORMAT TOGGLE
